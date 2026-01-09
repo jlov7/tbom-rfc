@@ -11,11 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    env:
-      KEY_DIR: ${{ runner.temp }}/tbom-release-keys
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Set KEY_DIR
+        run: echo "KEY_DIR=${RUNNER_TEMP}/tbom-release-keys" >> "$GITHUB_ENV"
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
