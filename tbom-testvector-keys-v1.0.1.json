@@ -1,0 +1,23 @@
+{
+  "issuer": {
+    "name": "Example, Inc.",
+    "url": "https://example.com",
+    "contact": "security@example.com"
+  },
+  "keys": [
+    {
+      "kty": "OKP",
+      "crv": "Ed25519",
+      "kid": "test-ed25519-2026-01-09",
+      "use": "sig",
+      "alg": "EdDSA",
+      "x": "kd2dFCIT6InfjKrO-uITzhJNDprP7QODzEtAXHUL65Y",
+      "validFrom": "2026-01-09T00:00:00Z",
+      "validUntil": "2027-01-09T00:00:00Z",
+      "tbomRoles": [
+        "supplier"
+      ],
+      "comment": "Test key for TBOM v1.0.2 examples (NOT FOR PRODUCTION)"
+    }
+  ]
+}

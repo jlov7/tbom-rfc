@@ -1,0 +1,31 @@
+{
+  "_type": "https://in-toto.io/Statement/v1",
+  "subject": [
+    {
+      "name": "tbom-whitepaper-rfc-v1.0.2.zip",
+      "digest": {
+        "sha256": "def132e2b0985aa71c1797dd01967472a6dc0d30eee8b67fb4f58bb4f451d785"
+      }
+    }
+  ],
+  "predicateType": "https://slsa.dev/provenance/v1",
+  "predicate": {
+    "buildDefinition": {
+      "buildType": "https://tbom.dev/build/whitepaper-release/v1",
+      "externalParameters": {
+        "makeTarget": "release",
+        "version": "1.0.2"
+      }
+    },
+    "runDetails": {
+      "builder": {
+        "id": "https://tbom.dev/build/cli"
+      },
+      "metadata": {
+        "invocationId": "7dcab9bd-7743-4a5f-be54-dfb46f02579e",
+        "startedOn": "2026-01-09T20:20:21Z",
+        "finishedOn": "2026-01-09T20:20:21Z"
+      }
+    }
+  }
+}

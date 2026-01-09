@@ -1,0 +1,221 @@
+{
+  "tbomVersion": "1.0.2",
+  "serialNumber": "urn:uuid:8a2d2d63-6c3b-4c46-ae5a-2e7d3c7b9d20",
+  "createdAt": "2026-01-09T00:00:00Z",
+  "subject": {
+    "kind": "mcp-server",
+    "name": "@example/postgres-mcp",
+    "version": "1.4.2",
+    "purl": "pkg:npm/%40example/postgres-mcp@1.4.2",
+    "supplier": {
+      "name": "Example, Inc.",
+      "url": "https://example.com",
+      "contact": "security@example.com"
+    },
+    "repository": {
+      "url": "https://example.com/repo/postgres-mcp",
+      "commit": "89abcdef0123456789abcdef0123456789abcdef"
+    },
+    "artifacts": [
+      {
+        "type": "npm",
+        "purl": "pkg:npm/%40example/postgres-mcp@1.4.2",
+        "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      {
+        "type": "container",
+        "digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "downloadUrl": "https://example.com/images/postgres-mcp:1.4.2"
+      }
+    ],
+    "license": "Apache-2.0"
+  },
+  "tools": [
+    {
+      "name": "query",
+      "description": "Run a read-only SQL query.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "sql": {
+            "type": "string",
+            "description": "SQL query to run (SELECT only)."
+          }
+        },
+        "required": [
+          "sql"
+        ]
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:5e7241a7f462683311cfb2decc447dcbb8840bbf6287074d93e5516f6bca0a81",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      },
+      "capabilities": {
+        "shellExecution": false,
+        "fileSystemAccess": "none",
+        "networkAccess": [
+          {
+            "host": "db.internal.example",
+            "port": 5432,
+            "protocol": "tcp"
+          }
+        ],
+        "credentialAccess": "read",
+        "userDataAccess": [
+          "pii"
+        ],
+        "externalSideEffects": "low"
+      },
+      "risk": {
+        "tier": "high",
+        "score": 72,
+        "rationale": "Direct database access; risk is mitigated by read-only credentials and network allowlisting."
+      }
+    },
+    {
+      "name": "list_tables",
+      "description": "List available tables.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:28f536760d81cee3ae1e14ff40968740415ffda51d99c041f67cef7929c69c31",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      },
+      "capabilities": {
+        "shellExecution": false,
+        "fileSystemAccess": "none",
+        "networkAccess": [
+          {
+            "host": "db.internal.example",
+            "port": 5432,
+            "protocol": "tcp"
+          }
+        ],
+        "credentialAccess": "read",
+        "userDataAccess": [
+          "pii"
+        ],
+        "externalSideEffects": "none"
+      },
+      "risk": {
+        "tier": "medium",
+        "score": 40,
+        "rationale": "Metadata-only operation; still requires DB connectivity."
+      }
+    },
+    {
+      "name": "get_schema",
+      "description": "Get table schema.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "table": {
+            "type": "string",
+            "description": "Table name"
+          }
+        },
+        "required": [
+          "table"
+        ]
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:a08e694d2c17c374c0b672c24697da82672a33be5a41f8a3ae6674606a9c0208",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      },
+      "capabilities": {
+        "shellExecution": false,
+        "fileSystemAccess": "none",
+        "networkAccess": [
+          {
+            "host": "db.internal.example",
+            "port": 5432,
+            "protocol": "tcp"
+          }
+        ],
+        "credentialAccess": "read",
+        "userDataAccess": [
+          "pii"
+        ],
+        "externalSideEffects": "none"
+      },
+      "risk": {
+        "tier": "medium",
+        "score": 45,
+        "rationale": "Schema reads; can expose sensitive column names/structure."
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "purl": "pkg:npm/pg@8.11.5",
+      "scope": "runtime",
+      "relationship": "dependsOn"
+    },
+    {
+      "purl": "pkg:npm/zod@3.23.8",
+      "scope": "runtime",
+      "relationship": "dependsOn"
+    }
+  ],
+  "vulnerabilities": [
+    {
+      "id": "CVE-2025-53110",
+      "cve": "CVE-2025-53110",
+      "source": "NVD",
+      "severity": "high",
+      "cvss": 8.1,
+      "description": "Example entry: path traversal in an MCP filesystem reference implementation (not necessarily affecting this package).",
+      "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-53110"
+    }
+  ],
+  "attestations": [
+    {
+      "type": "slsa",
+      "issuer": {
+        "name": "Example CI",
+        "url": "https://example.com/ci"
+      },
+      "issuedAt": "2026-01-09T00:00:00Z",
+      "subjectDigest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "evidence": "https://example.com/attestations/slsa/postgres-mcp-1.4.2.json"
+    }
+  ],
+  "signatures": [
+    {
+      "role": "supplier",
+      "type": "jws",
+      "algorithm": "Ed25519",
+      "keyId": "https://example.com/.well-known/tbom-keys.json#2026-01",
+      "signedAt": "2026-01-09T00:00:00Z",
+      "signer": {
+        "name": "Example, Inc.",
+        "url": "https://example.com",
+        "contact": "security@example.com"
+      },
+      "coverage": "tbomPayload",
+      "value": "<detached-jws-compact-serialization>"
+    },
+    {
+      "role": "registry",
+      "type": "jws",
+      "algorithm": "Ed25519",
+      "keyId": "https://registry.example/.well-known/tbom-keys.json#review-2026-01",
+      "signedAt": "2026-01-10T00:00:00Z",
+      "signer": {
+        "name": "Example Registry",
+        "url": "https://registry.example",
+        "contact": "security@registry.example"
+      },
+      "coverage": "tbomPayload",
+      "value": "<registry-detached-jws-compact-serialization>"
+    }
+  ]
+}

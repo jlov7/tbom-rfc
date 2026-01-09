@@ -1,0 +1,673 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tbom.dev/schema/tbom-1.0.2.json",
+  "title": "Tool Bill of Materials (TBOM) Schema",
+  "type": "object",
+  "required": [
+    "tbomVersion",
+    "serialNumber",
+    "createdAt",
+    "subject",
+    "tools",
+    "signatures"
+  ],
+  "properties": {
+    "tbomVersion": {
+      "type": "string",
+      "const": "1.0.2"
+    },
+    "serialNumber": {
+      "type": "string",
+      "pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "subject": {
+      "$ref": "#/$defs/Subject"
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ToolDefinition"
+      },
+      "minItems": 1
+    },
+    "resources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ResourceDefinition"
+      }
+    },
+    "prompts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/PromptDefinition"
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Dependency"
+      }
+    },
+    "vulnerabilities": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Vulnerability"
+      }
+    },
+    "attestations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Attestation"
+      }
+    },
+    "signatures": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Signature"
+      },
+      "minItems": 1,
+      "contains": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "const": "supplier"
+          }
+        },
+        "required": [
+          "role"
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "Organization": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "contact": {
+          "type": "string"
+        },
+        "identity": {
+          "type": "string"
+        },
+        "certificate": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Artifact": {
+      "type": "object",
+      "required": [
+        "type",
+        "digest"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "mcpb",
+            "npm",
+            "pypi",
+            "container",
+            "binary",
+            "source",
+            "other"
+          ]
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-fA-F0-9]{64}$"
+        },
+        "purl": {
+          "type": "string"
+        },
+        "downloadUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "platform": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Repository": {
+      "type": "object",
+      "required": [
+        "url"
+      ],
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "commit": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{40}$"
+        },
+        "tag": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Subject": {
+      "type": "object",
+      "required": [
+        "kind",
+        "name",
+        "version",
+        "supplier",
+        "artifacts"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "mcp-server",
+            "mcp-registry",
+            "tool-pack",
+            "other"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "purl": {
+          "type": "string"
+        },
+        "supplier": {
+          "$ref": "#/$defs/Organization"
+        },
+        "repository": {
+          "$ref": "#/$defs/Repository"
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Artifact"
+          },
+          "minItems": 1
+        },
+        "license": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "NetworkEndpoint": {
+      "type": "object",
+      "required": [
+        "host"
+      ],
+      "properties": {
+        "host": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "scheme": {
+          "type": "string"
+        },
+        "protocol": {
+          "type": "string",
+          "enum": [
+            "tcp",
+            "udp",
+            "http",
+            "https",
+            "ws",
+            "wss",
+            "grpc",
+            "other"
+          ]
+        },
+        "methods": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "GET",
+              "POST",
+              "PUT",
+              "DELETE",
+              "PATCH",
+              "OPTIONS",
+              "HEAD"
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "Capabilities": {
+      "type": "object",
+      "properties": {
+        "shellExecution": {
+          "type": "boolean"
+        },
+        "fileSystemAccess": {
+          "type": "string",
+          "enum": [
+            "none",
+            "read",
+            "write",
+            "readwrite"
+          ]
+        },
+        "networkAccess": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NetworkEndpoint"
+          }
+        },
+        "credentialAccess": {
+          "type": "string",
+          "enum": [
+            "none",
+            "read",
+            "write",
+            "readwrite"
+          ]
+        },
+        "userDataAccess": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "none",
+              "pii",
+              "phi",
+              "financial",
+              "biometric",
+              "location",
+              "communications",
+              "other"
+            ]
+          }
+        },
+        "externalSideEffects": {
+          "type": "string",
+          "enum": [
+            "none",
+            "low",
+            "high"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "RiskAssessment": {
+      "type": "object",
+      "required": [
+        "tier",
+        "score"
+      ],
+      "properties": {
+        "tier": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ]
+        },
+        "score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "rationale": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Digest": {
+      "type": "object",
+      "required": [
+        "algorithm",
+        "value",
+        "canonicalization",
+        "covers"
+      ],
+      "properties": {
+        "algorithm": {
+          "type": "string",
+          "enum": [
+            "sha256"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^sha256:[a-fA-F0-9]{64}$"
+        },
+        "canonicalization": {
+          "type": "string",
+          "enum": [
+            "rfc8785"
+          ]
+        },
+        "covers": {
+          "type": "string",
+          "pattern": "^\\{name,description,inputSchema(,outputSchema)?(,annotations)?\\}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ToolDefinition": {
+      "type": "object",
+      "required": [
+        "name",
+        "description",
+        "inputSchema",
+        "definitionDigest"
+      ],
+      "properties": {
+        "toolId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "inputSchema": {
+          "type": "object"
+        },
+        "outputSchema": {
+          "type": "object"
+        },
+        "annotations": {
+          "type": "object"
+        },
+        "definitionDigest": {
+          "$ref": "#/$defs/Digest"
+        },
+        "capabilities": {
+          "$ref": "#/$defs/Capabilities"
+        },
+        "risk": {
+          "$ref": "#/$defs/RiskAssessment"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ResourceDefinition": {
+      "type": "object",
+      "required": [
+        "uri",
+        "description",
+        "definitionDigest"
+      ],
+      "properties": {
+        "resourceId": {
+          "type": "string"
+        },
+        "uri": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "mimeType": {
+          "type": "string"
+        },
+        "definitionDigest": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false
+    },
+    "PromptDefinition": {
+      "type": "object",
+      "required": [
+        "name",
+        "description",
+        "definitionDigest"
+      ],
+      "properties": {
+        "promptId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "arguments": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "definitionDigest": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Dependency": {
+      "type": "object",
+      "required": [
+        "purl"
+      ],
+      "properties": {
+        "purl": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string",
+          "enum": [
+            "runtime",
+            "build",
+            "test",
+            "optional"
+          ]
+        },
+        "relationship": {
+          "type": "string",
+          "enum": [
+            "dependsOn",
+            "bundles",
+            "contains",
+            "optional"
+          ]
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-fA-F0-9]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Vulnerability": {
+      "type": "object",
+      "required": [
+        "id",
+        "source",
+        "severity"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "NVD",
+            "OSV",
+            "GHSA",
+            "vendor",
+            "other"
+          ]
+        },
+        "cve": {
+          "type": "string",
+          "pattern": "^CVE-\\d{4}-\\d{4,}$"
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ]
+        },
+        "cvss": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "description": {
+          "type": "string"
+        },
+        "fixedIn": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Attestation": {
+      "type": "object",
+      "required": [
+        "type",
+        "issuer",
+        "issuedAt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "slsa",
+            "in-toto",
+            "sigstore",
+            "custom"
+          ]
+        },
+        "issuer": {
+          "$ref": "#/$defs/Organization"
+        },
+        "issuedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "subjectDigest": {
+          "type": "string",
+          "pattern": "^sha256:[a-fA-F0-9]{64}$"
+        },
+        "evidence": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Signature": {
+      "type": "object",
+      "required": [
+        "role",
+        "type",
+        "algorithm",
+        "keyId",
+        "value"
+      ],
+      "properties": {
+        "role": {
+          "type": "string",
+          "enum": [
+            "supplier",
+            "registry",
+            "enterprise"
+          ]
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "jws",
+            "dsse",
+            "sigstore"
+          ]
+        },
+        "algorithm": {
+          "type": "string",
+          "enum": [
+            "Ed25519",
+            "ECDSA-P256",
+            "ECDSA-P384"
+          ]
+        },
+        "keyId": {
+          "type": "string",
+          "format": "uri"
+        },
+        "signedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "signer": {
+          "$ref": "#/$defs/Organization"
+        },
+        "coverage": {
+          "type": "string",
+          "enum": [
+            "tbomPayload",
+            "toolOnly",
+            "attestationOnly"
+          ]
+        },
+        "value": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": "object",
+          "properties": {
+            "certificateChain": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "transparencyLog": {
+              "type": "string",
+              "format": "uri"
+            },
+            "rekorUUID": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

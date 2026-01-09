@@ -1,0 +1,86 @@
+{
+  "tbomVersion": "1.0.2",
+  "serialNumber": "urn:uuid:7a3eb83a-31b5-44e6-8af6-d944a8f2ceab",
+  "createdAt": "2026-01-09T00:00:00Z",
+  "subject": {
+    "kind": "mcp-server",
+    "name": "@example/notes-server",
+    "version": "1.2.3",
+    "purl": "pkg:npm/%40example/notes-server@1.2.3",
+    "supplier": {
+      "name": "Example, Inc.",
+      "url": "https://example.com",
+      "contact": "security@example.com"
+    },
+    "repository": {
+      "url": "https://example.com/repo/notes-server",
+      "commit": "0123456789abcdef0123456789abcdef01234567"
+    },
+    "artifacts": [
+      {
+        "type": "source",
+        "digest": "sha256:5df19c1559cc16847357be1c880f09ec30bfb39d4612f459bd69bed49d8b79fd",
+        "downloadUrl": "https://example.com/downloads/notes-server-1.2.3.tgz"
+      }
+    ],
+    "license": "Apache-2.0"
+  },
+  "tools": [
+    {
+      "name": "create_note",
+      "description": "Create a new note in the user's vault.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "body"
+        ]
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:c8b0dd1582c61e53295ac07bae66448e67097a3b853ad6f2401025998b82dac7",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      },
+      "capabilities": {
+        "shellExecution": false,
+        "fileSystemAccess": "none",
+        "networkAccess": [],
+        "credentialAccess": "none",
+        "userDataAccess": [
+          "pii"
+        ],
+        "externalSideEffects": "low"
+      },
+      "risk": {
+        "tier": "medium",
+        "score": 45,
+        "rationale": "Creates notes containing user text; no external network by default."
+      }
+    }
+  ],
+  "signatures": [
+    {
+      "role": "supplier",
+      "type": "jws",
+      "algorithm": "Ed25519",
+      "keyId": "https://example.com/.well-known/tbom-keys.json#test-ed25519-2026-01-09",
+      "value": "eyJhbGciOiJFZERTQSIsImtpZCI6Imh0dHBzOi8vZXhhbXBsZS5jb20vLndlbGwta25vd24vdGJvbS1rZXlzLmpzb24jdGVzdC1lZDI1NTE5LTIwMjYtMDEtMDkiLCJ0eXAiOiJKV1MifQ..AatgeIsU648lScPAmoj35YpnasS2WnYcH_nwJBYrJGFhSRIUJd_fTC8Xw-WDnmY2xpDCsDVQFt0ICvignXANBQ",
+      "signedAt": "2026-01-09T00:00:00Z",
+      "signer": {
+        "name": "Example, Inc.",
+        "url": "https://example.com",
+        "contact": "security@example.com"
+      },
+      "coverage": "tbomPayload"
+    }
+  ]
+}

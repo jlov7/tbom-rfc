@@ -1,0 +1,14 @@
+{
+  "kty": "OKP",
+  "crv": "Ed25519",
+  "kid": "test-ed25519-2026-01-09",
+  "use": "sig",
+  "alg": "EdDSA",
+  "x": "kd2dFCIT6InfjKrO-uITzhJNDprP7QODzEtAXHUL65Y",
+  "validFrom": "2026-01-09T00:00:00Z",
+  "validUntil": "2027-01-09T00:00:00Z",
+  "tbomRoles": [
+    "supplier"
+  ],
+  "d": "jkvjZkg2MUOX_QGeezqvhxrZy6GlEJSWxWwjHRhqOI8"
+}

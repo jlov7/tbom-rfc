@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tbom.dev/schema/tbom-keys-1.0.1.json",
+  "title": "TBOM Signing Keys Document Schema",
+  "type": "object",
+  "required": [
+    "issuer",
+    "keys"
+  ],
+  "properties": {
+    "issuer": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "contact": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "keys": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/JWKWithMetadata"
+      },
+      "minItems": 1
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "JWKWithMetadata": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/JWK"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "validFrom": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "validUntil": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "revoked": {
+              "type": "boolean"
+            },
+            "comment": {
+              "type": "string"
+            },
+            "tbomRoles": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "supplier",
+                  "registry",
+                  "enterprise"
+                ]
+              },
+              "uniqueItems": true
+            }
+          },
+          "additionalProperties": true
+        }
+      ]
+    },
+    "JWK": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "kty",
+            "crv",
+            "kid",
+            "use",
+            "alg",
+            "x"
+          ],
+          "properties": {
+            "kty": {
+              "const": "OKP"
+            },
+            "crv": {
+              "const": "Ed25519"
+            },
+            "kid": {
+              "type": "string"
+            },
+            "use": {
+              "const": "sig"
+            },
+            "alg": {
+              "const": "EdDSA"
+            },
+            "x": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          },
+          "not": {
+            "required": [
+              "d"
+            ]
+          },
+          "additionalProperties": true
+        },
+        {
+          "type": "object",
+          "required": [
+            "kty",
+            "crv",
+            "kid",
+            "use",
+            "alg",
+            "x",
+            "y"
+          ],
+          "properties": {
+            "kty": {
+              "const": "EC"
+            },
+            "crv": {
+              "enum": [
+                "P-256",
+                "P-384"
+              ]
+            },
+            "kid": {
+              "type": "string"
+            },
+            "use": {
+              "const": "sig"
+            },
+            "alg": {
+              "enum": [
+                "ES256",
+                "ES384"
+              ]
+            },
+            "x": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "y": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          },
+          "not": {
+            "required": [
+              "d"
+            ]
+          },
+          "additionalProperties": true
+        }
+      ]
+    }
+  }
+}

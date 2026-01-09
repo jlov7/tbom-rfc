@@ -1,0 +1,63 @@
+{
+  "tbomVersion": "1.0.2",
+  "serialNumber": "urn:uuid:3c5a8e7a-0f0b-4a8a-9e7c-2f8e1c0d9a11",
+  "createdAt": "2026-01-09T00:00:00Z",
+  "subject": {
+    "kind": "mcp-server",
+    "name": "example-postgres-mcp",
+    "version": "0.1.0",
+    "supplier": {
+      "name": "Example, Inc.",
+      "url": "https://example.com",
+      "contact": "security@example.com"
+    },
+    "artifacts": [
+      {
+        "type": "container",
+        "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "downloadUrl": "https://example.com/images/example-postgres-mcp:0.1.0"
+      }
+    ],
+    "license": "Apache-2.0"
+  },
+  "tools": [
+    {
+      "name": "query",
+      "description": "Execute read-only SQL queries against a configured PostgreSQL database.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "sql": {
+            "type": "string",
+            "description": "Read-only SELECT query"
+          }
+        },
+        "required": [
+          "sql"
+        ]
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:33c6cda61ee958ecbdbe27599d589558254c9e4a97221da006617eb9bd2a10e1",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    }
+  ],
+  "signatures": [
+    {
+      "role": "supplier",
+      "type": "jws",
+      "algorithm": "Ed25519",
+      "keyId": "https://example.com/.well-known/tbom-keys.json#2026-01",
+      "signedAt": "2026-01-09T00:00:00Z",
+      "signer": {
+        "name": "Example, Inc.",
+        "url": "https://example.com",
+        "contact": "security@example.com"
+      },
+      "coverage": "tbomPayload",
+      "value": "<detached-jws-compact-serialization>"
+    }
+  ]
+}
