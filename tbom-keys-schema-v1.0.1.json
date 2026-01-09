@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://tbom.dev/schema/tbom-keys-1.0.1.json",
+  "$id": "https://raw.githubusercontent.com/jlov7/tbom-rfc/v1.0.2/tbom-keys-schema-v1.0.1.json",
   "title": "TBOM Signing Keys Document Schema",
   "type": "object",
   "required": [

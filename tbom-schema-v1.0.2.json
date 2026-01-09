@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://tbom.dev/schema/tbom-1.0.2.json",
+  "$id": "https://raw.githubusercontent.com/jlov7/tbom-rfc/v1.0.2/tbom-schema-v1.0.2.json",
   "title": "Tool Bill of Materials (TBOM) Schema",
   "type": "object",
   "required": [
