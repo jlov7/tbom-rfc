@@ -4,7 +4,7 @@
 
 **Author:** Jason M. Lovell
 **Period:** January 2026
-**Purpose:** Documentation of iterative refinement for EB-1A/NIW petition materials
+**Purpose:** Documentation of iterative refinement based on expert review feedback
 
 ---
 
@@ -16,7 +16,7 @@ Note: v1.0.1 artifacts are not included in this repository; the table below focu
 
 | Area | v1.0.2 outcome | Notes |
 |------|----------------|-------|
-| Document length | 2,290 lines | Expanded from the v1.0.1 draft |
+| Document length | 2,466 lines | Expanded from the v1.0.1 draft |
 | Schema version | 1.0.2 | Keys schema remains v1.0.1 |
 | Test vectors | Verifiable Ed25519 signatures | Reproducible, byte-for-byte |
 | Build tooling | Makefile + tbomctl.py + build.sh | Operational toolchain |
@@ -216,7 +216,7 @@ Changes between versions reflect feedback on:
 ### Specification Documents
 | File | Version | Lines | Purpose |
 |------|---------|-------|---------|
-| tbom-whitepaper-rfc-v1.0.2.md | 1.0.2 | 2,290 | Primary specification |
+| tbom-whitepaper-rfc-v1.0.2.md | 1.0.2 | 2,466 | Primary specification |
 | tbom-whitepaper-rfc-v1.0.2.html | 1.0.2 | Generated | Web distribution |
 | tbom-whitepaper-rfc-v1.0.2.pdf | 1.0.2 | Generated | Print/archive |
 
@@ -224,6 +224,17 @@ Changes between versions reflect feedback on:
 | File | Purpose |
 |------|---------|
 | tbom-development-history.md | Development history and change log |
+
+### Supporting Documentation
+| File | Purpose |
+|------|---------|
+| EXECUTIVE_SUMMARY.md | Non-technical executive overview |
+| FAQ.md | Non-technical FAQ |
+| RELEASE_NOTES_v1.0.2.md | Release notes for v1.0.2 |
+| SECURITY.md | Security reporting policy |
+| SECURITY_AUDIT.md | Audit status and recommended scope |
+| PERFORMANCE.md | Performance characterization |
+| CONTRIBUTING.md | Contribution guidelines |
 
 ### Schema Files
 | File | Version | Purpose |
@@ -246,6 +257,7 @@ Changes between versions reflect feedback on:
 | File | Purpose |
 |------|---------|
 | tbomctl.py | Reference CLI tool |
+| tbom_mcp_server.py | Reference MCP server |
 | Makefile | Build automation |
 | build.sh | Build wrapper |
 | requirements.txt | Python dependencies |
@@ -256,7 +268,7 @@ Changes between versions reflect feedback on:
 
 ---
 
-## Significance for Immigration Petition
+## Significance
 
 ### Original Contribution Evidence
 
@@ -280,4 +292,3 @@ Changes between versions reflect feedback on:
 ---
 
 *Document generated: January 2026*
-*For use in EB-1A/NIW petition supporting materials*

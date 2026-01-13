@@ -1,6 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/jlov7/tbom-rfc/v1.0.2/tbom-schema-v1.0.2.json",
+  "$id": "urn:tbom:schema:1.0.2",
+  "$comment": "Canonical URL will be published upon public release",
   "title": "Tool Bill of Materials (TBOM) Schema",
   "type": "object",
   "required": [
@@ -344,7 +345,7 @@
       },
       "additionalProperties": false
     },
-    "Digest": {
+    "DigestBase": {
       "type": "object",
       "required": [
         "algorithm",
@@ -370,11 +371,46 @@
           ]
         },
         "covers": {
-          "type": "string",
-          "pattern": "^\\{name,description,inputSchema(,outputSchema)?(,annotations)?\\}$"
+          "type": "string"
         }
       },
       "additionalProperties": false
+    },
+    "ToolDigest": {
+      "allOf": [
+        { "$ref": "#/$defs/DigestBase" },
+        {
+          "properties": {
+            "covers": {
+              "pattern": "^\\{name,description,inputSchema(,outputSchema)?(,annotations)?\\}$"
+            }
+          }
+        }
+      ]
+    },
+    "ResourceDigest": {
+      "allOf": [
+        { "$ref": "#/$defs/DigestBase" },
+        {
+          "properties": {
+            "covers": {
+              "pattern": "^\\{uri,description(,mimeType)?\\}$"
+            }
+          }
+        }
+      ]
+    },
+    "PromptDigest": {
+      "allOf": [
+        { "$ref": "#/$defs/DigestBase" },
+        {
+          "properties": {
+            "covers": {
+              "pattern": "^\\{name,description(,arguments)?\\}$"
+            }
+          }
+        }
+      ]
     },
     "ToolDefinition": {
       "type": "object",
@@ -404,7 +440,7 @@
           "type": "object"
         },
         "definitionDigest": {
-          "$ref": "#/$defs/Digest"
+          "$ref": "#/$defs/ToolDigest"
         },
         "capabilities": {
           "$ref": "#/$defs/Capabilities"
@@ -436,7 +472,7 @@
           "type": "string"
         },
         "definitionDigest": {
-          "$ref": "#/$defs/Digest"
+          "$ref": "#/$defs/ResourceDigest"
         }
       },
       "additionalProperties": false
@@ -465,7 +501,7 @@
           }
         },
         "definitionDigest": {
-          "$ref": "#/$defs/Digest"
+          "$ref": "#/$defs/PromptDigest"
         }
       },
       "additionalProperties": false

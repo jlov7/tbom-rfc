@@ -1,112 +1,85 @@
 # TBOM White Paper (RFC v1.0.2)
 
-This repo contains the TBOM white paper, schemas, examples, test vectors, and a reference toolchain for validation and signing checks.
+![TBOM Standard](https://img.shields.io/badge/Standard-TBOM%20v1.0.2-blue)
+[![MCP Compatible](https://img.shields.io/badge/MCP-Compatible-green)](https://modelcontextprotocol.io)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
+**Tool Bill of Materials (TBOM)** is a provenance and integrity standard for the Model Context Protocol (MCP) ecosystem. It provides a cryptographically signed manifest that binds MCP server releases to immutable tool metadata, enabling automated trust verification and preventing tool poisoning in AI agent supply chains.
 
 ## Quick start
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install -r requirements.txt
-# or for pinned versions:
-# python -m pip install -r requirements.lock
+python -m pip install -r requirements.lock
+# For minimal tooling only:
+# python -m pip install -r requirements.txt
 ./build.sh
 ```
 
 `./build.sh` runs `make all`, which:
 - validates JSON examples against the schema,
 - verifies the signed test vector,
+- runs linting (`ruff`), type checking (`mypy`), and unit tests (`pytest`),
 - builds HTML and PDF outputs from the markdown.
 
-## Build requirements
+## MCP Server
 
-- Python 3.9+
-- `pandoc`
-- `latexmk` with `xelatex` (Tex Live / MacTeX provides both)
-- `openssl` (for release signing)
-
-## Useful commands
+This repo includes a reference MCP server that demonstrates how to serve a TBOM and provide verification services:
 
 ```bash
-make check        # schema + signature verification
-make html         # regenerate HTML
-make pdf          # regenerate PDF
-make versions     # record tool versions to build-versions.txt
-make lock         # pin Python dependencies to requirements.lock
-make dist         # build release zip + checksums
-make keygen       # generate a local release signing key
-make sign         # sign SHA256SUMS.txt (requires key)
-make release      # dist + sign
-make verify-release  # verify release signatures + checksums
-make clean        # remove generated HTML/PDF
+# Run the TBOM reference server
+python tbom_mcp_server.py
 ```
 
-## Release bundle
+Note: the MCP server requires the `mcp` Python package (`python -m pip install mcp`).
 
-The release bundle is written to `dist/`:
-- `dist/tbom-whitepaper-rfc-v1.0.2.zip`
-- `dist/SHA256SUMS.txt`
-- `dist/SHA256SUMS.txt.sig`
-- `dist/provenance.json`
-- `dist/provenance.json.sig`
-- `dist/RELEASE_SIGNING_KEY.pub`
+## Tooling
 
-Signing uses a local key stored at `~/.tbom-release-keys/tbom-release.pem`.
-Generate the key with `make keygen`, then run `make release`.
-
-### Production signing (recommended)
-
-For a long-term release key, use a dedicated signing host or an HSM-backed key.
-Set the key paths explicitly and run `make release` on the signing host:
+### tbomctl.py
+A reference CLI for managing TBOMs:
 
 ```bash
-SIGNING_KEY=/path/to/release-key.pem \
-SIGNING_PUB=/path/to/release-key.pub \
-make release
+# Canonicalize JSON (RFC 8785)
+python tbomctl.py canon <file.json>
+
+# Compute tool definition digest
+python tbomctl.py digest-tool <tool.json>
+
+# Validate TBOM against schema and verify digests/signatures
+python tbomctl.py check --schema tbom-schema-v1.0.2.json <tbom.json>
+
+# Generate TBOM skeleton
+python tbomctl.py generate --subject subject.json --tools-list tools.json --output tbom.json
+
+# Detect drift between TBOM and live server response
+python tbomctl.py verify-drift --tbom tbom.json --tools-list live-tools.json
 ```
 
-Avoid `make keygen` for production releases; it is intended for local or CI-only testing.
+## Project Structure
 
-Verify the signed manifest:
+- **Specification**: `tbom-whitepaper-rfc-v1.0.2.md`
+- **Schemas**: `tbom-schema-v1.0.2.json`, `tbom-keys-schema-v1.0.1.json`
+- **Reference Tooling**: `tbomctl.py`, `tbom_mcp_server.py`
+- **Examples**: `tbom-example-full-v1.0.2.json`, `tbom-example-minimal-v1.0.2.json`
+- **Build System**: `Makefile`, `build.sh`, `scripts/generate_provenance.py`
+- **Documentation**: `EXECUTIVE_SUMMARY.md`, `FAQ.md`, `RELEASE_NOTES_v1.0.2.md`, `PERFORMANCE.md`, `SECURITY_AUDIT.md`, `SECURITY.md`
+
+## Development
+
+We use `ruff` for linting, `mypy` for types, and `pytest` for tests.
 
 ```bash
-openssl dgst -sha256 -verify dist/RELEASE_SIGNING_KEY.pub \
-  -signature dist/SHA256SUMS.txt.sig dist/SHA256SUMS.txt
+make lint
+make test
+make integration-test  # requires the MCP Python package
 ```
 
-Verify the provenance attestation:
+## Release Bundle
 
+The release bundle in `dist/` includes the specification in multiple formats, schemas, tooling, and a signed provenance attestation (`provenance.json`).
+
+Verify the release:
 ```bash
-openssl dgst -sha256 -verify dist/RELEASE_SIGNING_KEY.pub \
-  -signature dist/provenance.json.sig dist/provenance.json
+make verify-release
 ```
-
-## Reproducibility notes
-
-- `requirements.lock` captures exact Python dependency versions (`make lock`).
-- `build-versions.txt` records toolchain versions used for the release (`make versions`).
-
-## CI verification
-
-The workflow in `.github/workflows/release.yml` runs `make release` and
-`make verify-release` on tagged builds using an ephemeral signing key.
-For official releases, run the release step on your dedicated signing host
-or inject a long-term key via CI secrets and set `SIGNING_KEY`/`SIGNING_PUB`.
-
-## Key artifacts
-
-- `tbom-whitepaper-rfc-v1.0.2.md` (source)
-- `tbom-whitepaper-rfc-v1.0.2.html`
-- `tbom-whitepaper-rfc-v1.0.2.pdf`
-- `tbom-schema-v1.0.2.json`
-- `tbom-keys-schema-v1.0.1.json`
-- `tbom-example-minimal-v1.0.2.json`
-- `tbom-example-full-v1.0.2.json`
-- `tbom-testvector-signed-v1.0.2.json`
-- `tbomctl.py`
-- `tbom-development-history.md`
-- `requirements.lock`
-- `build-versions.txt`
-
-Test-only key material:
-- `tbom-testvector-private-ed25519.jwk.json` is included solely to reproduce the test vector signatures; it is labeled **NOT FOR PRODUCTION**.

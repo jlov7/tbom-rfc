@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright 2026 Jason M. Lovell
+# SPDX-License-Identifier: Apache-2.0
 """
 tbomctl.py — Minimal reference tooling for the MCP Tool Bill of Materials (TBOM) v1.0.2.
 
@@ -23,26 +25,25 @@ import json
 import sys
 import uuid
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 try:
     from jsonschema import Draft202012Validator, FormatChecker
 except ImportError as e:
-    raise SystemExit(
-        "Missing dependency 'jsonschema'. Install with: python3 -m pip install -r requirements.txt"
-    ) from e
+    raise SystemExit("Missing dependency 'jsonschema'. Install with: python3 -m pip install -r requirements.txt") from e
 
 try:
     import jcs
 except ImportError as e:
-    raise SystemExit(
-        "Missing dependency 'jcs'. Install with: python3 -m pip install -r requirements.txt"
-    ) from e
+    raise SystemExit("Missing dependency 'jcs'. Install with: python3 -m pip install -r requirements.txt") from e
 
 try:
     from cryptography.hazmat.primitives import hashes
     from cryptography.hazmat.primitives.asymmetric import ec, ed25519
-    from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature, encode_dss_signature
+    from cryptography.hazmat.primitives.asymmetric.utils import (
+        decode_dss_signature,
+        encode_dss_signature,
+    )
 except ImportError as e:
     raise SystemExit(
         "Missing dependency 'cryptography'. Install with: python3 -m pip install -r requirements.txt"
@@ -52,6 +53,7 @@ except ImportError as e:
 # ---------------------------
 # Utilities
 # ---------------------------
+
 
 def b64url_encode(data: bytes) -> str:
     return base64.urlsafe_b64encode(data).rstrip(b"=").decode("ascii")
@@ -76,7 +78,7 @@ def strip_null_object_keys(obj: Any) -> Any:
     (This implements TBOM's pre-canonicalization normalization rule for null-valued keys.)
     """
     if isinstance(obj, dict):
-        out: Dict[str, Any] = {}
+        out: dict[str, Any] = {}
         for k, v in obj.items():
             if v is None:
                 continue
@@ -91,7 +93,7 @@ def jcs_canonicalize(obj: Any) -> str:
     """
     RFC 8785 (JCS) canonicalization via the 'jcs' library.
     """
-    canonical = jcs.canonicalize(obj)
+    canonical: str | bytes = jcs.canonicalize(obj)
     if isinstance(canonical, bytes):
         return canonical.decode("utf-8")
     return canonical
@@ -117,7 +119,7 @@ def dump_json(obj: Any, *, pretty: bool = True) -> str:
 DIGEST_FIELDS = ["name", "description", "inputSchema", "outputSchema", "annotations"]
 
 
-def tool_digest_input(tool: Dict[str, Any]) -> Dict[str, Any]:
+def tool_digest_input(tool: dict[str, Any]) -> dict[str, Any]:
     """
     Build the digest input object for a tool definition, per TBOM v1.0.2:
       { name, description, inputSchema, (outputSchema?), (annotations?) }
@@ -128,7 +130,7 @@ def tool_digest_input(tool: Dict[str, Any]) -> Dict[str, Any]:
         if r not in tool:
             raise ValueError(f"Tool definition missing required field: {r}")
 
-    digest_obj: Dict[str, Any] = {
+    digest_obj: dict[str, Any] = {
         "name": tool["name"],
         "description": tool["description"],
         "inputSchema": tool["inputSchema"],
@@ -139,10 +141,10 @@ def tool_digest_input(tool: Dict[str, Any]) -> Dict[str, Any]:
     if "annotations" in tool and tool["annotations"] is not None:
         digest_obj["annotations"] = tool["annotations"]
 
-    return strip_null_object_keys(digest_obj)
+    return dict(strip_null_object_keys(digest_obj))
 
 
-def compute_tool_digest(tool: Dict[str, Any]) -> Tuple[str, str]:
+def compute_tool_digest(tool: dict[str, Any]) -> tuple[str, str]:
     """
     Returns (canonical_json, digest_value) where digest_value is "sha256:<hex>".
     """
@@ -152,7 +154,7 @@ def compute_tool_digest(tool: Dict[str, Any]) -> Tuple[str, str]:
     return canonical, digest_value
 
 
-def definition_digest_covers(tool: Dict[str, Any]) -> str:
+def definition_digest_covers(tool: dict[str, Any]) -> str:
     """
     Return the definitionDigest.covers string for the tool digest input.
     """
@@ -165,12 +167,13 @@ def definition_digest_covers(tool: Dict[str, Any]) -> str:
 # JWS (detached payload) signing / verification
 # ---------------------------
 
-def tbom_payload_for_signing(tbom: Dict[str, Any]) -> Dict[str, Any]:
+
+def tbom_payload_for_signing(tbom: dict[str, Any]) -> dict[str, Any]:
     """
     The signed payload is the TBOM object with the 'signatures' field removed.
     """
     payload = {k: v for k, v in tbom.items() if k != "signatures"}
-    return strip_null_object_keys(payload)
+    return dict(strip_null_object_keys(payload))
 
 
 def jws_alg_for_tbom_algorithm(tbom_algorithm: str) -> str:
@@ -191,7 +194,7 @@ def jws_alg_for_tbom_algorithm(tbom_algorithm: str) -> str:
         raise ValueError(f"Unsupported TBOM signature algorithm: {tbom_algorithm}") from e
 
 
-def load_private_key_from_jwk(jwk: Dict[str, Any]):
+def load_private_key_from_jwk(jwk: dict[str, Any]) -> ed25519.Ed25519PrivateKey | ec.EllipticCurvePrivateKey:
     """
     Supports:
     - OKP Ed25519 with 'd' (raw 32-byte private key)
@@ -211,6 +214,7 @@ def load_private_key_from_jwk(jwk: Dict[str, Any]):
 
     if kty == "EC":
         crv = jwk.get("crv")
+        curve: ec.EllipticCurve
         if crv == "P-256":
             curve = ec.SECP256R1()
         elif crv == "P-384":
@@ -231,7 +235,7 @@ def load_private_key_from_jwk(jwk: Dict[str, Any]):
     raise ValueError(f"Unsupported JWK kty: {kty}")
 
 
-def load_public_key_from_jwk(jwk: Dict[str, Any]):
+def load_public_key_from_jwk(jwk: dict[str, Any]) -> ed25519.Ed25519PublicKey | tuple[ec.EllipticCurvePublicKey, int]:
     kty = jwk.get("kty")
     if kty == "OKP":
         if jwk.get("crv") != "Ed25519":
@@ -246,6 +250,7 @@ def load_public_key_from_jwk(jwk: Dict[str, Any]):
 
     if kty == "EC":
         crv = jwk.get("crv")
+        curve: ec.EllipticCurve
         if crv == "P-256":
             curve = ec.SECP256R1()
             size = 32
@@ -279,11 +284,11 @@ def ecdsa_der_signature_from_raw(raw_sig: bytes, size: int) -> bytes:
 
 
 def sign_tbom_jws_detached(
-    tbom: Dict[str, Any],
+    tbom: dict[str, Any],
     *,
     tbom_algorithm: str,
     key_id: str,
-    private_jwk: Dict[str, Any],
+    private_jwk: dict[str, Any],
     typ: str = "JWS",
 ) -> str:
     """
@@ -308,7 +313,7 @@ def sign_tbom_jws_detached(
         crv = private_jwk.get("crv")
         if crv == "P-256":
             size = 32
-            h = hashes.SHA256()
+            h: hashes.HashAlgorithm = hashes.SHA256()
         elif crv == "P-384":
             size = 48
             h = hashes.SHA384()
@@ -321,18 +326,18 @@ def sign_tbom_jws_detached(
     raise ValueError("Unsupported private key type")
 
 
-def resolve_kid_from_key_id(key_id: str) -> Tuple[str, Optional[str]]:
+def resolve_kid_from_key_id(key_id: str) -> tuple[str, str | None]:
     """
     Return (base_url, fragment_kid)
     """
     if "#" in key_id:
         base, frag = key_id.split("#", 1)
-        frag = frag or None
-        return base, frag
+        frag_opt: str | None = frag or None
+        return base, frag_opt
     return key_id, None
 
 
-def load_key_from_keys_doc(keys_doc: Dict[str, Any], kid: str) -> Dict[str, Any]:
+def load_key_from_keys_doc(keys_doc: dict[str, Any], kid: str) -> dict[str, Any]:
     keys = keys_doc.get("keys")
     if not isinstance(keys, list):
         raise ValueError("Invalid keys doc: missing 'keys' array")
@@ -343,9 +348,9 @@ def load_key_from_keys_doc(keys_doc: Dict[str, Any], kid: str) -> Dict[str, Any]
 
 
 def verify_tbom_jws_detached(
-    tbom: Dict[str, Any],
-    signature_entry: Dict[str, Any],
-    keys_doc: Dict[str, Any],
+    tbom: dict[str, Any],
+    signature_entry: dict[str, Any],
+    keys_doc: dict[str, Any],
 ) -> None:
     """
     Verify a TBOM signature entry of type 'jws' (detached payload).
@@ -374,7 +379,7 @@ def verify_tbom_jws_detached(
         raise ValueError(f"JWS alg '{alg}' does not match TBOM algorithm '{tbom_algorithm}'")
 
     _, frag_kid = resolve_kid_from_key_id(key_id)
-    resolved_kid: Optional[str] = frag_kid
+    resolved_kid: str | None = frag_kid
     if resolved_kid is None:
         if isinstance(header_kid, str):
             # If header kid is a URL, extract fragment, otherwise treat as kid
@@ -414,13 +419,13 @@ def verify_tbom_jws_detached(
 
     # ECDSA
     if alg in ("ES256", "ES384"):
-        pub_key, size = load_public_key_from_jwk(jwk)
+        key_or_tuple = load_public_key_from_jwk(jwk)
+        if isinstance(key_or_tuple, ed25519.Ed25519PublicKey):
+            raise ValueError("Expected EC key for ECDSA algorithm")
+        pub_key, size = key_or_tuple
         if not isinstance(pub_key, ec.EllipticCurvePublicKey):
             raise ValueError("Resolved key is not an EC public key")
-        if alg == "ES256":
-            h = hashes.SHA256()
-        else:
-            h = hashes.SHA384()
+        h = hashes.SHA256() if alg == "ES256" else hashes.SHA384()
         der = ecdsa_der_signature_from_raw(sig_bytes, size)
         pub_key.verify(der, signing_input, ec.ECDSA(h))
         return
@@ -431,6 +436,7 @@ def verify_tbom_jws_detached(
 # ---------------------------
 # Commands
 # ---------------------------
+
 
 def cmd_canon(args: argparse.Namespace) -> int:
     obj = load_json(Path(args.input))
@@ -549,7 +555,7 @@ def cmd_generate(args: argparse.Namespace) -> int:
     if not isinstance(tools, list):
         raise SystemExit("tools-list must be a JSON array or an object with a 'tools' array")
 
-    tbom: Dict[str, Any] = {
+    tbom: dict[str, Any] = {
         "tbomVersion": "1.0.2",
         "serialNumber": f"urn:uuid:{uuid.uuid4()}",
         "createdAt": now_rfc3339(),
@@ -563,7 +569,7 @@ def cmd_generate(args: argparse.Namespace) -> int:
                 "keyId": "https://example.com/.well-known/tbom-keys.json#CHANGE-ME",
                 "signedAt": now_rfc3339(),
                 "coverage": "tbomPayload",
-                "value": "<detached-jws-compact-serialization>"
+                "value": "<detached-jws-compact-serialization>",
             }
         ],
     }
@@ -572,11 +578,12 @@ def cmd_generate(args: argparse.Namespace) -> int:
         if not isinstance(t, dict):
             continue
         # Copy fields we care about
-        tool_entry: Dict[str, Any] = {
-            k: v for k, v in t.items()
+        tool_entry: dict[str, Any] = {
+            k: v
+            for k, v in t.items()
             if k in ("toolId", "name", "description", "inputSchema", "outputSchema", "annotations")
         }
-        canonical, digest = compute_tool_digest(tool_entry)
+        _, digest = compute_tool_digest(tool_entry)
         tool_entry["definitionDigest"] = {
             "algorithm": "sha256",
             "value": digest,
@@ -632,6 +639,106 @@ def cmd_sign_jws(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_verify_drift(args: argparse.Namespace) -> int:
+    """
+    Compare a TBOM's tool definitions against a live tools/list response.
+    Detects drift (tool poisoning) by comparing digests.
+    """
+    tbom = load_json(Path(args.tbom))
+    if not isinstance(tbom, dict):
+        raise SystemExit("TBOM must be a JSON object")
+
+    tools_list_obj = load_json(Path(args.tools_list))
+    live_tools: Any
+    if isinstance(tools_list_obj, dict) and "tools" in tools_list_obj:
+        live_tools = tools_list_obj["tools"]
+    else:
+        live_tools = tools_list_obj
+    if not isinstance(live_tools, list):
+        raise SystemExit("tools-list must be a JSON array or an object with a 'tools' array")
+
+    tbom_tools = tbom.get("tools")
+    if not isinstance(tbom_tools, list):
+        raise SystemExit("TBOM tools must be an array")
+
+    # Build lookup by name for TBOM tools
+    tbom_by_name: dict[str, dict[str, Any]] = {}
+    for t in tbom_tools:
+        if isinstance(t, dict) and "name" in t:
+            tbom_by_name[t["name"]] = t
+
+    ok = True
+    checked = 0
+    drifted = 0
+    missing_in_tbom = 0
+    missing_in_live = 0
+
+    # Check each live tool against TBOM
+    live_names = set()
+    for live_tool in live_tools:
+        if not isinstance(live_tool, dict):
+            continue
+        name = live_tool.get("name")
+        if not name:
+            continue
+        live_names.add(name)
+
+        if name not in tbom_by_name:
+            print(f"[WARN] Tool '{name}' in live server but not in TBOM", file=sys.stderr)
+            missing_in_tbom += 1
+            continue
+
+        tbom_tool = tbom_by_name[name]
+        dd = tbom_tool.get("definitionDigest")
+        if not isinstance(dd, dict):
+            print(f"[WARN] Tool '{name}' in TBOM missing definitionDigest", file=sys.stderr)
+            continue
+
+        expected_digest = dd.get("value")
+
+        # Compute digest of live tool using same fields as TBOM
+        try:
+            _, computed_digest = compute_tool_digest(live_tool)
+        except ValueError as e:
+            print(f"[FAIL] Tool '{name}': cannot compute digest: {e}", file=sys.stderr)
+            ok = False
+            drifted += 1
+            continue
+
+        checked += 1
+        if expected_digest != computed_digest:
+            print(f"[DRIFT] Tool '{name}': metadata has changed!", file=sys.stderr)
+            print(f"  TBOM digest:  {expected_digest}", file=sys.stderr)
+            print(f"  Live digest:  {computed_digest}", file=sys.stderr)
+            if args.verbose:
+                canonical, _ = compute_tool_digest(live_tool)
+                print(f"  Live canonical: {canonical}", file=sys.stderr)
+            ok = False
+            drifted += 1
+        elif args.verbose:
+            print(f"[OK] Tool '{name}': digest matches")
+
+    # Check for tools in TBOM but not in live server
+    for tbom_name in tbom_by_name:
+        if tbom_name not in live_names:
+            print(f"[WARN] Tool '{tbom_name}' in TBOM but not in live server", file=sys.stderr)
+            missing_in_live += 1
+
+    # Summary
+    print("\nDrift detection summary:")
+    print(f"  Tools checked: {checked}")
+    print(f"  Drifted: {drifted}")
+    print(f"  Missing in TBOM: {missing_in_tbom}")
+    print(f"  Missing in live: {missing_in_live}")
+
+    if ok and drifted == 0:
+        print("\n✓ No drift detected")
+        return 0
+    else:
+        print("\n✗ DRIFT DETECTED - tool metadata has changed since TBOM was signed")
+        return 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="tbomctl.py")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -669,10 +776,16 @@ def build_parser() -> argparse.ArgumentParser:
     p_sign.add_argument("--output", required=True, help="Path to write signed TBOM JSON")
     p_sign.set_defaults(func=cmd_sign_jws)
 
+    p_verify = sub.add_parser("verify-drift", help="Compare TBOM tool digests against live tools/list response")
+    p_verify.add_argument("--tbom", required=True, help="Path to TBOM JSON")
+    p_verify.add_argument("--tools-list", required=True, help="Path to live tools/list response JSON")
+    p_verify.add_argument("--verbose", "-v", action="store_true", help="Show details for each tool")
+    p_verify.set_defaults(func=cmd_verify_drift)
+
     return p
 
 
-def main(argv: Optional[list[str]] = None) -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
     return int(args.func(args))

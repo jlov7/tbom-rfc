@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright 2026 Jason M. Lovell
+# SPDX-License-Identifier: Apache-2.0
 """
 Generate a minimal SLSA-style provenance statement for a release bundle.
 """
@@ -28,12 +30,12 @@ def main() -> int:
     parser.add_argument("--version", required=True, help="Release version")
     parser.add_argument(
         "--build-type",
-        default="https://tbom.dev/build/whitepaper-release/v1",
+        default="urn:tbom:build:whitepaper-release:v1",
         help="Build type URI",
     )
     parser.add_argument(
         "--builder-id",
-        default="https://tbom.dev/build/cli",
+        default="urn:tbom:build:cli",
         help="Builder ID",
     )
     args = parser.parse_args()

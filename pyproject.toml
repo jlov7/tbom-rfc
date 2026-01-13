@@ -1,0 +1,79 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tbom"
+version = "1.0.2"
+description = "Tool Bill of Materials (TBOM) Reference Implementation"
+authors = [{name = "Jason M. Lovell", email = "jase.lovell@me.com"}]
+license = {text = "Apache-2.0"}
+requires-python = ">=3.9"
+dependencies = [
+    "jsonschema>=4.18.0",
+    "cryptography>=41.0.0",
+    "jcs>=0.2.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.1.0",
+    "mypy>=1.6.0",
+    "pytest>=7.4.0",
+    "hypothesis>=6.70.0",
+    "pyinstaller>=6.0.0",
+    "types-jsonschema>=4.17.0",
+    "mcp>=1.25.0",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+    "N",   # pep8-naming
+    "SIM", # flake8-simplify
+    "RUF", # ruff-specific rules
+]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["tbomctl"]
+
+[tool.mypy]
+python_version = "3.9"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+
+[[tool.mypy.overrides]]
+module = "jcs.*"
+ignore_missing_imports = true
+
+[tool.pytest]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--hypothesis-profile=ci",
+]
+asyncio_mode = "auto"
+markers = [
+    "integration: marks tests as integration tests (deselect with '-m \"not integration\"')",
+]
+
+[tool.hypothesis]
+max_examples = 100
+deadline = 5000

@@ -1,3 +1,6 @@
+# Copyright 2026 Jason M. Lovell
+# SPDX-License-Identifier: Apache-2.0
+
 PANDOC ?= pandoc
 OPENSSL ?= openssl
 PYTHON ?= python3
@@ -31,8 +34,11 @@ TEST_ARTIFACT := tbom-test-artifact.txt
 
 DIST_FILES := $(MD) $(HTML) $(PDF) $(SCHEMA) $(KEYS_SCHEMA) $(EXAMPLES) \
 	$(SIGNED) $(KEYS) $(PRIVATE_KEY) $(TOOL_DEF) $(TEST_ARTIFACT) \
-	tbomctl.py Makefile build.sh requirements.txt $(LOCK_FILE) $(BUILD_VERSIONS) \
-	README.md tbom-development-history.md $(PROVENANCE_SCRIPT)
+	tbomctl.py tbom_mcp_server.py py.typed Makefile build.sh requirements.txt $(LOCK_FILE) $(BUILD_VERSIONS) \
+	pyproject.toml README.md tbom-development-history.md $(PROVENANCE_SCRIPT) scripts/build_binaries.py \
+	tests/test_tbomctl.py tests/test_mcp_integration.py \
+	EXECUTIVE_SUMMARY.md FAQ.md RELEASE_NOTES_v1.0.2.md \
+	LICENSE CONTRIBUTING.md SECURITY.md SECURITY_AUDIT.md PERFORMANCE.md
 
 PANDOC_FLAGS := --standalone
 PANDOC_PDF_ENGINE_OPTS :=
@@ -43,11 +49,11 @@ ifneq ($(wildcard .venv/bin/python),)
 PYTHON := .venv/bin/python
 endif
 
-.PHONY: all check check-python validate-examples verify-testvector html pdf versions lock dist keygen sign release verify-release clean
+.PHONY: all check check-python validate-examples verify-testvector html pdf versions lock dist binaries keygen sign release verify-release clean lint test integration-test
 
 all: check html pdf
 
-check: validate-examples verify-testvector
+check: validate-examples verify-testvector lint test
 
 check-python:
 	@[ -x "$(PYTHON)" ] || { echo "python3 is required"; exit 1; }
@@ -60,6 +66,17 @@ validate-examples: check-python
 
 verify-testvector: check-python
 	@$(PYTHON) tbomctl.py check --schema $(SCHEMA) --keys $(KEYS) --keys-schema $(KEYS_SCHEMA) $(SIGNED)
+
+lint: check-python
+	@$(PYTHON) -m ruff check .
+	@$(PYTHON) -m ruff format --check .
+	@$(PYTHON) -m mypy tbomctl.py scripts/generate_provenance.py
+
+test: check-python
+	@$(PYTHON) -m pytest tests/ -m "not integration"
+
+integration-test: check-python
+	@$(PYTHON) -m pytest tests/ -m "integration"
 
 html:
 	@command -v $(PANDOC) >/dev/null || { echo \"pandoc is required for HTML\"; exit 1; }
@@ -90,6 +107,10 @@ dist: all versions lock
 	@zip -q -r $(DIST_ZIP) $(DIST_FILES)
 	@$(PYTHON) $(PROVENANCE_SCRIPT) --zip $(DIST_ZIP) --output $(PROVENANCE) --version 1.0.2
 	@shasum -a 256 $(DIST_ZIP) $(DIST_FILES) $(PROVENANCE) > $(DIST_DIR)/SHA256SUMS.txt
+
+binaries: check-python
+	@command -v pyinstaller >/dev/null || { echo "pyinstaller is required for binaries (pip install pyinstaller)"; exit 1; }
+	@$(PYTHON) scripts/build_binaries.py
 keygen:
 	@command -v $(OPENSSL) >/dev/null || { echo \"openssl is required for release signing\"; exit 1; }
 	@mkdir -p $(KEY_DIR)

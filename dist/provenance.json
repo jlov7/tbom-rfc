@@ -4,14 +4,14 @@
     {
       "name": "tbom-whitepaper-rfc-v1.0.2.zip",
       "digest": {
-        "sha256": "d2ec4b9e9be7537479740d044a926f750b88ba763802113bd85cc8cf8c40a8ca"
+        "sha256": "ee11f100f7e2114aa94bc1fe04129facbfa6812031a4709b0dbc381485beb026"
       }
     }
   ],
   "predicateType": "https://slsa.dev/provenance/v1",
   "predicate": {
     "buildDefinition": {
-      "buildType": "https://tbom.dev/build/whitepaper-release/v1",
+      "buildType": "urn:tbom:build:whitepaper-release:v1",
       "externalParameters": {
         "makeTarget": "release",
         "version": "1.0.2"
@@ -19,12 +19,12 @@
     },
     "runDetails": {
       "builder": {
-        "id": "https://tbom.dev/build/cli"
+        "id": "urn:tbom:build:cli"
       },
       "metadata": {
-        "invocationId": "86dba551-830f-4f4b-b6c9-9900b8077a72",
-        "startedOn": "2026-01-09T20:34:52Z",
-        "finishedOn": "2026-01-09T20:34:52Z"
+        "invocationId": "dfa0f311-11d6-4765-831c-5136ea254db4",
+        "startedOn": "2026-01-13T02:08:42Z",
+        "finishedOn": "2026-01-13T02:08:42Z"
       }
     }
   }
