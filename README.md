@@ -3,9 +3,26 @@
 ![TBOM Standard](https://img.shields.io/badge/Standard-TBOM%20v1.0.2-blue)
 [![MCP Compatible](https://img.shields.io/badge/MCP-Compatible-green)](https://modelcontextprotocol.io)
 [![CI](https://github.com/jlov7/tbom-rfc/actions/workflows/ci.yml/badge.svg)](https://github.com/jlov7/tbom-rfc/actions/workflows/ci.yml)
+[![Release Build](https://github.com/jlov7/tbom-rfc/actions/workflows/release.yml/badge.svg)](https://github.com/jlov7/tbom-rfc/actions/workflows/release.yml)
+![Provenance](https://img.shields.io/badge/Provenance-in--toto-0b7285)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+```
+ _______ ____  __  __
+|__   __|  _ \|  \/  |
+   | |  | |_) | \  / |
+   | |  |  _ <| |\/| |
+   | |  | |_) | |  | |
+   |_|  |____/|_|  |_|
+```
+
 **Tool Bill of Materials (TBOM)** is a provenance and integrity standard for the Model Context Protocol (MCP) ecosystem. It provides a cryptographically signed manifest that binds MCP server releases to immutable tool metadata, enabling automated trust verification and preventing tool poisoning in AI agent supply chains.
+
+## For everyone (non-technical TL;DR)
+
+- Think of TBOM as a tamper-evident label for AI tools and MCP servers.
+- If a tool changes after release, TBOM verification detects it immediately.
+- You can prove what was shipped and what is running, even months later.
 
 ## Quick start
 
@@ -24,7 +41,10 @@ python -m pip install -r requirements.lock
 - runs linting (`ruff`), type checking (`mypy`), and unit tests (`pytest`),
 - runs integration tests and AI-style evals.
 
-## Visual Tour
+## Visual Demo
+
+Two-minute walkthrough with visible output:
+- `docs/TERMINAL_DEMO.md`
 
 ```
 TBOM verification pipeline
@@ -41,7 +61,29 @@ python tbomctl.py check --schema tbom-schema-v1.0.2.json tbom-example-full-v1.0.
 # OK
 ```
 
-Terminal demo sessions: `docs/TERMINAL_DEMO.md`.
+## How it works (visuals)
+
+```mermaid
+flowchart LR
+    A[Release artifacts] --> B[TBOM manifest]
+    B --> C[Signatures]
+    C --> D[Verifier]
+    D --> E{Trusted?}
+    E -->|Yes| F[Use tools]
+    E -->|No| G[Block + alert]
+```
+
+```mermaid
+sequenceDiagram
+    participant Build as Build System
+    participant Repo as Release Bundle
+    participant Server as MCP Server
+    participant Agent as Agent/User
+    Build->>Repo: Generate TBOM + sign
+    Server->>Agent: Serve tools + TBOM
+    Agent->>Agent: tbomctl verify-drift
+    Agent-->>Agent: OK or DRIFT
+```
 
 ## MCP Server
 
@@ -81,7 +123,7 @@ python tbomctl.py verify-drift --tbom tbom.json --tools-list live-tools.json
 - **Reference Tooling**: `tbomctl.py`, `tbom_mcp_server.py`
 - **Examples**: `tbom-example-full-v1.0.2.json`, `tbom-example-minimal-v1.0.2.json`
 - **Build System**: `Makefile`, `build.sh`, `scripts/generate_provenance.py`
-- **Documentation**: `EXECUTIVE_SUMMARY.md`, `FAQ.md`, `RELEASE_NOTES_v1.0.2.md`, `PERFORMANCE.md`, `SECURITY_AUDIT.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`
+- **Documentation**: `EXECUTIVE_SUMMARY.md`, `FAQ.md`, `RELEASE_NOTES_v1.0.2.md`, `PERFORMANCE.md`, `SECURITY_AUDIT.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `docs/TERMINAL_DEMO.md`
 
 ## Repository Map
 
@@ -91,6 +133,7 @@ tbom_mcp_server.py      Reference MCP server
 tbom-schema-v1.0.2.json TBOM schema
 tests/                  Unit + integration tests
 scripts/                Build, eval, and mutation tooling
+docs/                   Visual demos and walkthroughs
 ```
 
 ## Development
