@@ -36,7 +36,18 @@ def run_cmd(cmd: list[str]) -> tuple[int, str]:
 
 
 def format_cmd(cmd: list[str]) -> str:
-    return " ".join(shlex.quote(part) for part in cmd)
+    cleaned: list[str] = []
+    repo_root = str(REPO_ROOT)
+    for part in cmd:
+        if part == sys.executable:
+            cleaned.append("python")
+            continue
+        if isinstance(part, str) and part.startswith(repo_root):
+            rel = part.replace(repo_root + "/", "")
+            cleaned.append(rel)
+            continue
+        cleaned.append(part)
+    return " ".join(shlex.quote(part) for part in cleaned)
 
 
 def main() -> int:

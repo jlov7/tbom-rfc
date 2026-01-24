@@ -46,6 +46,7 @@ make mutation-test
 make showcase
 make showcase-strict
 make demo-video
+make demo-video-strict
 ```
 
 ## Docs site (optional)

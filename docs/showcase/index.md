@@ -25,6 +25,7 @@ Generate a video from the showcase log:
 
 ```bash
 make demo-video
+make demo-video-strict
 ```
 
 ## What you get
