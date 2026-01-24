@@ -1,17 +1,10 @@
 # Copyright 2026 Jason M. Lovell
 # SPDX-License-Identifier: Apache-2.0
 
-PANDOC ?= pandoc
 OPENSSL ?= openssl
 PYTHON ?= python3
-PDF_ENGINE ?= latexmk
-PDF_ENGINE_OPTS ?= -xelatex
-
-MD := tbom-whitepaper-rfc-v1.0.2.md
-HTML := tbom-whitepaper-rfc-v1.0.2.html
-PDF := tbom-whitepaper-rfc-v1.0.2.pdf
 DIST_DIR := dist
-DIST_ZIP := $(DIST_DIR)/tbom-whitepaper-rfc-v1.0.2.zip
+DIST_ZIP := $(DIST_DIR)/tbom-tooling-v1.0.2.zip
 KEY_DIR ?= $(HOME)/.tbom-release-keys
 SIGNING_KEY ?= $(KEY_DIR)/tbom-release.pem
 SIGNING_PUB ?= $(KEY_DIR)/tbom-release.pub
@@ -32,26 +25,20 @@ PRIVATE_KEY := tbom-testvector-private-ed25519.jwk.json
 TOOL_DEF := tool-create_note.json
 TEST_ARTIFACT := tbom-test-artifact.txt
 
-DIST_FILES := $(MD) $(HTML) $(PDF) $(SCHEMA) $(KEYS_SCHEMA) $(EXAMPLES) \
+DIST_FILES := $(SCHEMA) $(KEYS_SCHEMA) $(EXAMPLES) \
 	$(SIGNED) $(KEYS) $(PRIVATE_KEY) $(TOOL_DEF) $(TEST_ARTIFACT) \
 	tbomctl.py tbom_mcp_server.py py.typed Makefile build.sh requirements.txt $(LOCK_FILE) $(BUILD_VERSIONS) \
 	pyproject.toml README.md tbom-development-history.md $(PROVENANCE_SCRIPT) scripts/build_binaries.py scripts/ai_eval.py scripts/mutation_test.py \
 	tests/test_tbomctl.py tests/test_mcp_integration.py TESTING.md \
 	EXECUTIVE_SUMMARY.md FAQ.md RELEASE_NOTES_v1.0.2.md \
 	LICENSE CONTRIBUTING.md SECURITY.md SECURITY_AUDIT.md PERFORMANCE.md
-
-PANDOC_FLAGS := --standalone
-PANDOC_PDF_ENGINE_OPTS :=
-ifneq ($(strip $(PDF_ENGINE_OPTS)),)
-PANDOC_PDF_ENGINE_OPTS := $(foreach opt,$(PDF_ENGINE_OPTS),--pdf-engine-opt=$(opt))
-endif
 ifneq ($(wildcard .venv/bin/python),)
 PYTHON := .venv/bin/python
 endif
 
-.PHONY: all check check-python validate-examples verify-testvector html pdf versions lock dist binaries keygen sign release verify-release clean lint test integration-test verify verify-strict ai-eval mutation-test
+.PHONY: all check check-python validate-examples verify-testvector versions lock dist binaries keygen sign release verify-release clean lint test integration-test verify verify-strict ai-eval mutation-test
 
-all: check html pdf
+all: verify
 
 check: validate-examples verify-testvector lint test
 
@@ -90,20 +77,11 @@ mutation-test: check-python
 	@mkdir -p build
 	@$(PYTHON) scripts/mutation_test.py --output build/mutation-report.json
 
-html:
-	@command -v $(PANDOC) >/dev/null || { echo \"pandoc is required for HTML\"; exit 1; }
-	@$(PANDOC) $(PANDOC_FLAGS) $(MD) -o $(HTML)
-
-pdf:
-	@command -v $(PANDOC) >/dev/null || { echo \"pandoc is required for PDF\"; exit 1; }
-	@command -v $(PDF_ENGINE) >/dev/null || { echo \"$(PDF_ENGINE) is required for PDF\"; exit 1; }
-	@$(PANDOC) $(PANDOC_FLAGS) $(PANDOC_PDF_ENGINE_OPTS) --pdf-engine=$(PDF_ENGINE) $(MD) -o $(PDF)
-
 versions:
 	@{ \
 		echo "generated_utc: $$(date -u +%Y-%m-%dT%H:%M:%SZ)"; \
 		echo "python: $$($(PYTHON) --version 2>&1)"; \
-		if command -v $(PANDOC) >/dev/null; then $(PANDOC) --version | head -n 1; else echo "pandoc: not found"; fi; \
+		if command -v pandoc >/dev/null; then pandoc --version | head -n 1; else echo "pandoc: not found"; fi; \
 		if command -v latexmk >/dev/null; then latexmk -v | head -n 1; else echo "latexmk: not found"; fi; \
 		if command -v xelatex >/dev/null; then xelatex --version | head -n 1; else echo "xelatex: not found"; fi; \
 		if command -v $(OPENSSL) >/dev/null; then $(OPENSSL) version; else echo "openssl: not found"; fi; \
@@ -153,4 +131,4 @@ verify-release:
 	@shasum -a 256 -c $(DIST_DIR)/SHA256SUMS.txt
 
 clean:
-	@rm -f $(HTML) $(PDF)
+	@rm -rf build

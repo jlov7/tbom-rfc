@@ -1,4 +1,4 @@
-# TBOM White Paper (RFC v1.0.2)
+# TBOM Reference Implementation (v1.0.2)
 
 ![TBOM Standard](https://img.shields.io/badge/Standard-TBOM%20v1.0.2-blue)
 [![MCP Compatible](https://img.shields.io/badge/MCP-Compatible-green)](https://modelcontextprotocol.io)
@@ -21,7 +21,7 @@ python -m pip install -r requirements.lock
 - validates JSON examples against the schema,
 - verifies the signed test vector,
 - runs linting (`ruff`), type checking (`mypy`), and unit tests (`pytest`),
-- builds HTML and PDF outputs from the markdown.
+- runs integration tests and AI-style evals.
 
 ## MCP Server
 
@@ -57,8 +57,6 @@ python tbomctl.py verify-drift --tbom tbom.json --tools-list live-tools.json
 ```
 
 ## Project Structure
-
-- **Specification**: `tbom-whitepaper-rfc-v1.0.2.md`
 - **Schemas**: `tbom-schema-v1.0.2.json`, `tbom-keys-schema-v1.0.1.json`
 - **Reference Tooling**: `tbomctl.py`, `tbom_mcp_server.py`
 - **Examples**: `tbom-example-full-v1.0.2.json`, `tbom-example-minimal-v1.0.2.json`
@@ -81,7 +79,7 @@ See `TESTING.md` for full verification details.
 
 ## Release Bundle
 
-The release bundle in `dist/` includes the specification in multiple formats, schemas, tooling, and a signed provenance attestation (`provenance.json`).
+The release bundle in `dist/` includes schemas, tooling, docs, and a signed provenance attestation (`provenance.json`).
 
 Verify the release:
 ```bash

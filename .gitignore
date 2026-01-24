@@ -6,4 +6,6 @@ __pycache__/
 .specstory/
 .hypothesis/
 build/
+dist/
 dist/binaries/
+tbom-whitepaper-rfc-v1.0.2*
