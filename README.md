@@ -2,6 +2,7 @@
 
 ![TBOM Standard](https://img.shields.io/badge/Standard-TBOM%20v1.0.2-blue)
 [![MCP Compatible](https://img.shields.io/badge/MCP-Compatible-green)](https://modelcontextprotocol.io)
+[![CI](https://github.com/jlov7/tbom-rfc/actions/workflows/ci.yml/badge.svg)](https://github.com/jlov7/tbom-rfc/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 **Tool Bill of Materials (TBOM)** is a provenance and integrity standard for the Model Context Protocol (MCP) ecosystem. It provides a cryptographically signed manifest that binds MCP server releases to immutable tool metadata, enabling automated trust verification and preventing tool poisoning in AI agent supply chains.
@@ -22,6 +23,25 @@ python -m pip install -r requirements.lock
 - verifies the signed test vector,
 - runs linting (`ruff`), type checking (`mypy`), and unit tests (`pytest`),
 - runs integration tests and AI-style evals.
+
+## Visual Tour
+
+```
+TBOM verification pipeline
+--------------------------
+[tools/list] -> [tbomctl verify-drift] -> [digest compare] -> [OK | DRIFT]
+
+TBOM signing path
+-----------------
+[tbom.json] -> [tbomctl sign-jws] -> [detached JWS] -> [tbomctl check]
+```
+
+```bash
+python tbomctl.py check --schema tbom-schema-v1.0.2.json tbom-example-full-v1.0.2.json
+# OK
+```
+
+Terminal demo sessions: `docs/TERMINAL_DEMO.md`.
 
 ## MCP Server
 
@@ -61,7 +81,17 @@ python tbomctl.py verify-drift --tbom tbom.json --tools-list live-tools.json
 - **Reference Tooling**: `tbomctl.py`, `tbom_mcp_server.py`
 - **Examples**: `tbom-example-full-v1.0.2.json`, `tbom-example-minimal-v1.0.2.json`
 - **Build System**: `Makefile`, `build.sh`, `scripts/generate_provenance.py`
-- **Documentation**: `EXECUTIVE_SUMMARY.md`, `FAQ.md`, `RELEASE_NOTES_v1.0.2.md`, `PERFORMANCE.md`, `SECURITY_AUDIT.md`, `SECURITY.md`
+- **Documentation**: `EXECUTIVE_SUMMARY.md`, `FAQ.md`, `RELEASE_NOTES_v1.0.2.md`, `PERFORMANCE.md`, `SECURITY_AUDIT.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`
+
+## Repository Map
+
+```
+tbomctl.py              CLI tooling
+tbom_mcp_server.py      Reference MCP server
+tbom-schema-v1.0.2.json TBOM schema
+tests/                  Unit + integration tests
+scripts/                Build, eval, and mutation tooling
+```
 
 ## Development
 

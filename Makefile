@@ -30,8 +30,8 @@ DIST_FILES := $(SCHEMA) $(KEYS_SCHEMA) $(EXAMPLES) \
 	tbomctl.py tbom_mcp_server.py py.typed Makefile build.sh requirements.txt $(LOCK_FILE) $(BUILD_VERSIONS) \
 	pyproject.toml README.md tbom-development-history.md $(PROVENANCE_SCRIPT) scripts/build_binaries.py scripts/ai_eval.py scripts/mutation_test.py \
 	tests/test_tbomctl.py tests/test_mcp_integration.py TESTING.md \
-	EXECUTIVE_SUMMARY.md FAQ.md RELEASE_NOTES_v1.0.2.md \
-	LICENSE CONTRIBUTING.md SECURITY.md SECURITY_AUDIT.md PERFORMANCE.md
+	EXECUTIVE_SUMMARY.md FAQ.md RELEASE_NOTES_v1.0.2.md docs/TERMINAL_DEMO.md \
+	LICENSE CONTRIBUTING.md SECURITY.md SECURITY_AUDIT.md PERFORMANCE.md CODE_OF_CONDUCT.md
 ifneq ($(wildcard .venv/bin/python),)
 PYTHON := .venv/bin/python
 endif
@@ -81,9 +81,6 @@ versions:
 	@{ \
 		echo "generated_utc: $$(date -u +%Y-%m-%dT%H:%M:%SZ)"; \
 		echo "python: $$($(PYTHON) --version 2>&1)"; \
-		if command -v pandoc >/dev/null; then pandoc --version | head -n 1; else echo "pandoc: not found"; fi; \
-		if command -v latexmk >/dev/null; then latexmk -v | head -n 1; else echo "latexmk: not found"; fi; \
-		if command -v xelatex >/dev/null; then xelatex --version | head -n 1; else echo "xelatex: not found"; fi; \
 		if command -v $(OPENSSL) >/dev/null; then $(OPENSSL) version; else echo "openssl: not found"; fi; \
 	} > $(BUILD_VERSIONS)
 

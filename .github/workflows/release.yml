@@ -23,7 +23,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y pandoc texlive-xetex latexmk zip libdigest-sha-perl
+          sudo apt-get install -y zip libdigest-sha-perl
       - name: Create venv and install Python deps
         run: |
           python -m venv .venv

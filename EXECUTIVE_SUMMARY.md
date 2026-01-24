@@ -20,7 +20,6 @@ TBOM (Tool Bill of Materials) is a community RFC for the Model Context Protocol 
 
 ## What this release includes
 
-- RFC whitepaper in Markdown, PDF, and HTML
 - JSON schemas, examples, and reproducible test vectors
 - Reference CLI (`tbomctl.py`) for validation and verification
 - Reference MCP server showing how to publish and verify TBOMs

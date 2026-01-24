@@ -1,0 +1,48 @@
+name: Bug report
+description: Report a defect in TBOM tooling, schema, or examples.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report an issue.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: TBOM version or commit hash.
+      placeholder: "v1.0.2 or 1234abcd"
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Python version, and tooling versions.
+      placeholder: "macOS 14.2, Python 3.11.7, ruff 0.4.0"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Provide minimal steps or a small repro case.
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true

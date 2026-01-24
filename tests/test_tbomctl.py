@@ -66,8 +66,8 @@ def test_compute_tool_digest():
     }
     _, digest = compute_tool_digest(tool)
 
-    # Expected values from the whitepaper example (re-verified)
-    # The digest value in the whitepaper for this tool is:
+    # Expected values from the reference example (re-verified)
+    # The digest value for this tool is:
     # sha256:c8b0dd1582c61e53295ac07bae66448e67097a3b853ad6f2401025998b82dac7
     expected_digest = "sha256:c8b0dd1582c61e53295ac07bae66448e67097a3b853ad6f2401025998b82dac7"
 

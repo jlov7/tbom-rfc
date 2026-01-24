@@ -101,12 +101,11 @@ sha256:c8b0dd1582c61e53295ac07bae66448e67097a3b853ad6f2401025998b82dac7
 
 **Commands:**
 ```bash
-make check        # Schema + signature verification
-make html         # Generate HTML from markdown
-make pdf          # Generate PDF (requires LaTeX)
-make keygen       # Generate release signing key
+make verify          # Schema + signature verification + tests + evals
+make verify-strict   # Adds mutation testing
+make keygen          # Generate release signing key
 make verify-release  # Verify release signatures + checksums
-make release      # Build signed distribution bundle
+make release         # Build signed distribution bundle
 ```
 
 ### 5. Release Signing Workflow (New)
@@ -115,7 +114,7 @@ make release      # Build signed distribution bundle
 
 ```
 dist/
-├── tbom-whitepaper-rfc-v1.0.2.zip
+├── tbom-tooling-v1.0.2.zip
 ├── SHA256SUMS.txt
 ├── SHA256SUMS.txt.sig      # RSA-3072 signature
 ├── provenance.json          # SLSA-style provenance statement
@@ -213,12 +212,11 @@ Changes between versions reflect feedback on:
 
 ## Artifact Inventory
 
-### Specification Documents
-| File | Version | Lines | Purpose |
-|------|---------|-------|---------|
-| tbom-whitepaper-rfc-v1.0.2.md | 1.0.2 | 2,466 | Primary specification |
-| tbom-whitepaper-rfc-v1.0.2.html | 1.0.2 | Generated | Web distribution |
-| tbom-whitepaper-rfc-v1.0.2.pdf | 1.0.2 | Generated | Print/archive |
+### Tooling Artifacts
+| File | Purpose |
+|------|---------|
+| tbomctl.py | Reference CLI for validation and signing |
+| tbom_mcp_server.py | Reference MCP server implementation |
 
 ### Process Documentation
 | File | Purpose |

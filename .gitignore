@@ -5,7 +5,10 @@ __pycache__/
 .cursorindexingignore
 .specstory/
 .hypothesis/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
 build/
 dist/
 dist/binaries/
-tbom-whitepaper-rfc-v1.0.2*
+tbom-*-rfc-v1.0.2*

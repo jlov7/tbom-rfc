@@ -1,12 +1,11 @@
-# TBOM RFC v1.0.2 Release Notes
+# TBOM Tooling v1.0.2 Release Notes
 
 ## Summary
 
-This release packages the TBOM RFC and reference implementation as a verifiable, signed bundle. It includes the specification, schemas, test vectors, tooling, and a reproducible build pipeline.
+This release packages the TBOM reference implementation as a verifiable, signed bundle. It includes schemas, test vectors, tooling, and a reproducible build pipeline.
 
 ## Highlights
 
-- RFC v1.0.2 with clarified signature and digest semantics
 - Schemas, examples, and test vectors aligned and validated
 - Reference CLI (`tbomctl.py`) for validation and verification
 - Reference MCP server (`tbom_mcp_server.py`) demonstrating TBOM publication
@@ -15,7 +14,7 @@ This release packages the TBOM RFC and reference implementation as a verifiable,
 
 ## Artifacts
 
-- `dist/tbom-whitepaper-rfc-v1.0.2.zip`
+- `dist/tbom-tooling-v1.0.2.zip`
 - `dist/SHA256SUMS.txt` and `dist/SHA256SUMS.txt.sig`
 - `dist/provenance.json` and `dist/provenance.json.sig`
 - `dist/RELEASE_SIGNING_KEY.pub`

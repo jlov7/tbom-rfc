@@ -30,7 +30,7 @@ def main() -> int:
     parser.add_argument("--version", required=True, help="Release version")
     parser.add_argument(
         "--build-type",
-        default="urn:tbom:build:whitepaper-release:v1",
+        default="urn:tbom:build:tooling-release:v1",
         help="Build type URI",
     )
     parser.add_argument(

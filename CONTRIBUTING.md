@@ -1,6 +1,6 @@
 # Contributing to TBOM
 
-Thank you for your interest in contributing to the Tool Bill of Materials (TBOM) specification!
+Thank you for your interest in contributing to the Tool Bill of Materials (TBOM) standard and reference implementation!
 
 ## Ways to Contribute
 
@@ -53,7 +53,6 @@ Specification changes require more discussion:
 2. Wait for maintainer feedback before investing in implementation
 3. If approved, follow the minor changes process above
 4. Specification PRs should update:
-   - The markdown source (`tbom-whitepaper-rfc-v1.0.2.md`)
    - The JSON schema if normative fields change
    - Examples if affected
    - Test vectors if verification logic changes
@@ -92,14 +91,13 @@ Before submitting:
 # Set up environment
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.lock
 
 # Run all checks
-make check
+make verify
 
-# Verify release bundle (if changing dist files)
-make release
-make verify-release
+# Strict checks (mutation testing)
+make verify-strict
 ```
 
 ## Code of Conduct
@@ -113,4 +111,4 @@ This project follows the [Contributor Covenant Code of Conduct](https://www.cont
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the same terms as the project (Apache 2.0 for code, CC BY 4.0 for specification content).
+By contributing, you agree that your contributions will be licensed under the same terms as the project (Apache 2.0 for code and tooling).

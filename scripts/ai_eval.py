@@ -30,7 +30,7 @@ def run_evals() -> dict[str, object]:
     failures = 0
     repo_root = REPO_ROOT
 
-    # Golden digest check (matches whitepaper example)
+    # Golden digest check (matches reference example)
     tool_path = repo_root / "tool-create_note.json"
     if tool_path.exists():
         tool = json.loads(tool_path.read_text(encoding="utf-8"))
