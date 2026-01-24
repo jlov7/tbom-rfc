@@ -8,12 +8,11 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ```
-TTTTT  BBBB   OOO   M   M
-  T    B   B O   O  MM MM
-  T    BBBB  O   O  M M M
-  T    B   B O   O  M   M
-  T    BBBB   OOO   M   M
-[build]--[sign]--[verify]--[trust]
+.-======================-.
+|    T B O M  v1.0.2      |
+|  build -> sign ->       |
+|  verify -> trust        |
+'-======================-'
 ```
 
 **Tool Bill of Materials (TBOM)** is a provenance and integrity standard for the Model Context Protocol (MCP) ecosystem. It provides a cryptographically signed manifest that binds MCP server releases to immutable tool metadata, enabling automated trust verification and preventing tool poisoning in AI agent supply chains.
