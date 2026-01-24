@@ -46,3 +46,10 @@ make mutation-test
 make showcase
 make showcase-strict
 ```
+
+## Docs site (optional)
+
+```bash
+python -m pip install -r docs/requirements.txt
+mkdocs build
+```

@@ -8,11 +8,13 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ```
-.-======================-.
-|    T B O M  v1.0.2      |
-|  build -> sign ->       |
-|  verify -> trust        |
-'-======================-'
+  _______ ____  ____  __  __
+ |__   __|  _ \|  _ \|  \/  |
+    | |  | |_) | |_) | \  / |
+    | |  |  _ <|  _ <| |\/| |
+    | |  | |_) | |_) | |  | |
+    |_|  |____/|____/|_|  |_|
+  [build] -> [sign] -> [verify] -> [trust]
 ```
 
 **Tool Bill of Materials (TBOM)** is a provenance and integrity standard for the Model Context Protocol (MCP) ecosystem. It provides a cryptographically signed manifest that binds MCP server releases to immutable tool metadata, enabling automated trust verification and preventing tool poisoning in AI agent supply chains.
@@ -47,6 +49,8 @@ Two-minute walkthrough with visible output:
 - `DEMO_SCRIPT.md` (60-second live demo script)
 Architecture + threat model:
 - `ARCHITECTURE.md`
+Showcase site (GitHub Pages):
+- `https://jlov7.github.io/tbom-rfc/`
 
 ## Showcase Pack
 
@@ -57,7 +61,7 @@ make showcase
 ```
 
 Artifacts land in `build/showcase/`.
-Guide: `docs/showcase/README.md`.
+Guide: `docs/showcase/index.md`.
 
 ```
 TBOM verification pipeline
@@ -136,7 +140,7 @@ python tbomctl.py verify-drift --tbom tbom.json --tools-list live-tools.json
 - **Reference Tooling**: `tbomctl.py`, `tbom_mcp_server.py`
 - **Examples**: `tbom-example-full-v1.0.2.json`, `tbom-example-minimal-v1.0.2.json`
 - **Build System**: `Makefile`, `build.sh`, `scripts/generate_provenance.py`
-- **Documentation**: `EXECUTIVE_SUMMARY.md`, `DEMO_SCRIPT.md`, `ARCHITECTURE.md`, `FAQ.md`, `RELEASE_NOTES_v1.0.2.md`, `PERFORMANCE.md`, `SECURITY_AUDIT.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `docs/TERMINAL_DEMO.md`, `docs/showcase/README.md`
+- **Documentation**: `EXECUTIVE_SUMMARY.md`, `DEMO_SCRIPT.md`, `ARCHITECTURE.md`, `FAQ.md`, `RELEASE_NOTES_v1.0.2.md`, `PERFORMANCE.md`, `SECURITY_AUDIT.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `docs/TERMINAL_DEMO.md`, `docs/showcase/index.md`, `mkdocs.yml`
 
 ## Repository Map
 
@@ -149,6 +153,7 @@ scripts/                Build, eval, and mutation tooling
 docs/                   Visual demos and walkthroughs
 ARCHITECTURE.md         Architecture + threat model
 DEMO_SCRIPT.md          60-second live demo script
+mkdocs.yml              Docs site configuration
 ```
 
 ## Development
@@ -164,6 +169,13 @@ make verify-strict     # adds mutation tests
 ```
 
 See `TESTING.md` for full verification details.
+
+Docs site (optional):
+
+```bash
+python -m pip install -r docs/requirements.txt
+mkdocs serve
+```
 
 ## Credibility Signals
 

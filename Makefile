@@ -31,7 +31,8 @@ DIST_FILES := $(SCHEMA) $(KEYS_SCHEMA) $(EXAMPLES) \
 	tbomctl.py tbom_mcp_server.py py.typed Makefile build.sh requirements.txt $(LOCK_FILE) $(BUILD_VERSIONS) \
 	pyproject.toml README.md tbom-development-history.md $(PROVENANCE_SCRIPT) scripts/build_binaries.py scripts/ai_eval.py scripts/mutation_test.py scripts/showcase.py \
 	tests/test_tbomctl.py tests/test_mcp_integration.py TESTING.md \
-	EXECUTIVE_SUMMARY.md DEMO_SCRIPT.md ARCHITECTURE.md FAQ.md RELEASE_NOTES_v1.0.2.md docs/TERMINAL_DEMO.md docs/showcase/README.md \
+	EXECUTIVE_SUMMARY.md DEMO_SCRIPT.md ARCHITECTURE.md FAQ.md RELEASE_NOTES_v1.0.2.md docs/TERMINAL_DEMO.md docs/showcase/index.md \
+	docs/index.md docs/demo.md docs/architecture.md docs/trust.md docs/requirements.txt docs/stylesheets/extra.css docs/assets/tbom-sigil.svg mkdocs.yml \
 	LICENSE CONTRIBUTING.md SECURITY.md SECURITY_AUDIT.md PERFORMANCE.md CODE_OF_CONDUCT.md
 ifneq ($(wildcard .venv/bin/python),)
 PYTHON := .venv/bin/python

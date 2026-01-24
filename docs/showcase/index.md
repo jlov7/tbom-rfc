@@ -1,6 +1,6 @@
 # TBOM Showcase Pack
 
-This folder describes the "showcase mode" used for live demos and stakeholder reviews.
+This folder describes the "showcase mode" used for live demos and reviews.
 
 ## 60-second story (non-technical)
 
@@ -44,4 +44,4 @@ $ python tbomctl.py verify-drift --tbom tbom-example-full-v1.0.2.json --tools-li
 
 ## Live demo path (copy/paste)
 
-See `DEMO_SCRIPT.md` for a 60-second script.
+See `../demo.md` for a 60-second script.

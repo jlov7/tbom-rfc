@@ -11,4 +11,5 @@ __pycache__/
 build/
 dist/
 dist/binaries/
+site/
 tbom-*-rfc-v1.0.2*

@@ -1,0 +1,48 @@
+site_name: TBOM Showcase
+site_description: Tamper-evident tool metadata for MCP
+site_url: https://jlov7.github.io/tbom-rfc/
+repo_url: https://github.com/jlov7/tbom-rfc
+repo_name: jlov7/tbom-rfc
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.footer
+    - content.code.copy
+    - toc.follow
+  palette:
+    - scheme: default
+      primary: teal
+      accent: amber
+  font:
+    text: Space Grotesk
+    code: IBM Plex Mono
+
+extra_css:
+  - stylesheets/extra.css
+
+plugins:
+  - search
+  - mermaid2
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - attr_list
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Demo:
+      - 60-second Demo: demo.md
+      - Terminal Walkthrough: TERMINAL_DEMO.md
+      - Showcase Pack: showcase/index.md
+  - Architecture: architecture.md
+  - Trust Signals: trust.md

@@ -12,6 +12,7 @@ permissions: read-all
 jobs:
   analysis:
     runs-on: ubuntu-latest
+    if: github.event.repository.private == false
     permissions:
       security-events: write
       id-token: write

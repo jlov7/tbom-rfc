@@ -1,0 +1,15 @@
+<svg width="320" height="320" viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <desc>TBOM sigil: interlocked rings inside a verification seal.</desc>
+  <defs>
+    <linearGradient id="tbom-seal" x1="40" y1="40" x2="280" y2="280" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0b7285"/>
+      <stop offset="1" stop-color="#f29f05"/>
+    </linearGradient>
+  </defs>
+  <circle cx="160" cy="160" r="120" stroke="url(#tbom-seal)" stroke-width="8"/>
+  <circle cx="160" cy="160" r="88" stroke="#0c1f2a" stroke-width="2" stroke-dasharray="6 8"/>
+  <rect x="80" y="130" width="92" height="60" rx="30" stroke="url(#tbom-seal)" stroke-width="8"/>
+  <rect x="148" y="130" width="92" height="60" rx="30" stroke="url(#tbom-seal)" stroke-width="8"/>
+  <path d="M140 105 L160 85 L180 105" stroke="#0c1f2a" stroke-width="6" stroke-linecap="round"/>
+  <path d="M140 215 L160 235 L180 215" stroke="#0c1f2a" stroke-width="6" stroke-linecap="round"/>
+</svg>
