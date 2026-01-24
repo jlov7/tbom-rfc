@@ -1,11 +1,24 @@
 import json
+from pathlib import Path
+
+import pytest
 
 from tbomctl import (
+    cmd_sign_jws,
+    compute_prompt_digest,
+    compute_resource_digest,
     compute_tool_digest,
     definition_digest_covers,
     jcs_canonicalize,
+    prompt_digest_covers,
+    prompt_digest_input,
+    resource_digest_covers,
+    resource_digest_input,
+    sign_tbom_jws_detached,
     tool_digest_input,
 )
+
+REPO_ROOT = Path(__file__).parent.parent
 
 try:
     from hypothesis import given
@@ -70,6 +83,115 @@ def test_digest_covers_with_output_schema():
 def test_digest_covers_with_annotations():
     tool = {"name": "foo", "description": "bar", "inputSchema": {}, "annotations": {"foo": "bar"}}
     assert definition_digest_covers(tool) == "{name,description,inputSchema,annotations}"
+
+
+def test_resource_digest_input_and_covers():
+    resource = {
+        "uri": "tbom://example/resource",
+        "description": "Example resource",
+        "mimeType": "text/plain",
+        "extraField": "ignored",
+    }
+    digest_input = resource_digest_input(resource)
+    assert "extraField" not in digest_input
+    assert digest_input["uri"] == "tbom://example/resource"
+    assert digest_input["description"] == "Example resource"
+    assert digest_input["mimeType"] == "text/plain"
+    assert resource_digest_covers(resource) == "{uri,description,mimeType}"
+
+
+def test_prompt_digest_input_and_covers():
+    prompt = {
+        "name": "summarize",
+        "description": "Summarize input text.",
+        "arguments": [{"name": "text", "type": "string"}],
+        "extraField": "ignored",
+    }
+    digest_input = prompt_digest_input(prompt)
+    assert "extraField" not in digest_input
+    assert digest_input["name"] == "summarize"
+    assert digest_input["description"] == "Summarize input text."
+    assert digest_input["arguments"] == [{"name": "text", "type": "string"}]
+    assert prompt_digest_covers(prompt) == "{name,description,arguments}"
+
+
+def test_compute_resource_digest_expected():
+    resource = {"uri": "tbom://example/resource", "description": "Example resource", "mimeType": "text/plain"}
+    _, digest = compute_resource_digest(resource)
+    expected_digest = "sha256:142f837c95bd4cc28911c740e24251ef5db4e54b28ad2d0a5a4e5a8c98a26c9e"
+    assert digest == expected_digest
+
+
+def test_compute_prompt_digest_expected():
+    prompt = {
+        "name": "summarize",
+        "description": "Summarize input text.",
+        "arguments": [{"name": "text", "type": "string"}],
+    }
+    _, digest = compute_prompt_digest(prompt)
+    expected_digest = "sha256:6614555bd817da2717b67d7638b26e37cdb34fb1488efc911d452a5217ec9500"
+    assert digest == expected_digest
+
+
+def test_sign_tbom_jws_detached_rejects_mismatched_key():
+    private_jwk = json.loads((REPO_ROOT / "tbom-testvector-private-ed25519.jwk.json").read_text(encoding="utf-8"))
+    tbom = {
+        "tbomVersion": "1.0.2",
+        "serialNumber": "urn:uuid:00000000-0000-4000-8000-000000000000",
+        "createdAt": "2026-01-01T00:00:00Z",
+        "subject": {"name": "test"},
+        "tools": [],
+        "signatures": [],
+    }
+    with pytest.raises(ValueError):
+        sign_tbom_jws_detached(
+            tbom,
+            tbom_algorithm="ECDSA-P256",
+            key_id="https://example.com/keys#test",
+            private_jwk=private_jwk,
+        )
+
+
+def test_cmd_sign_jws_removes_placeholder_signature(tmp_path):
+    private_jwk_path = REPO_ROOT / "tbom-testvector-private-ed25519.jwk.json"
+    tbom_input = {
+        "tbomVersion": "1.0.2",
+        "serialNumber": "urn:uuid:00000000-0000-4000-8000-000000000001",
+        "createdAt": "2026-01-01T00:00:00Z",
+        "subject": {"name": "test"},
+        "tools": [],
+        "signatures": [
+            {
+                "role": "supplier",
+                "type": "jws",
+                "algorithm": "Ed25519",
+                "keyId": "https://example.com/.well-known/tbom-keys.json#CHANGE-ME",
+                "signedAt": "2026-01-01T00:00:00Z",
+                "coverage": "tbomPayload",
+                "value": "<detached-jws-compact-serialization>",
+            }
+        ],
+    }
+    input_path = tmp_path / "tbom.json"
+    output_path = tmp_path / "signed.json"
+    input_path.write_text(json.dumps(tbom_input), encoding="utf-8")
+
+    class Args:
+        key = str(private_jwk_path)
+        kid = "https://example.com/keys#test"
+        algorithm = "Ed25519"
+        role = "supplier"
+        typ = "JWS"
+        input = str(input_path)
+        output = str(output_path)
+
+    cmd_sign_jws(Args())
+
+    signed_tbom = json.loads(output_path.read_text(encoding="utf-8"))
+    assert all(
+        not (isinstance(sig, dict) and sig.get("value") == "<detached-jws-compact-serialization>")
+        for sig in signed_tbom.get("signatures", [])
+    )
 
 
 # Property-based tests using Hypothesis

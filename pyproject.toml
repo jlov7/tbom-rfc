@@ -20,11 +20,19 @@ dev = [
     "ruff>=0.1.0",
     "mypy>=1.6.0",
     "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
     "hypothesis>=6.70.0",
     "pyinstaller>=6.0.0",
     "types-jsonschema>=4.17.0",
     "mcp>=1.25.0",
 ]
+
+[project.scripts]
+tbomctl = "tbomctl:main"
+tbom-mcp-server = "tbom_mcp_server:main"
+
+[tool.setuptools]
+py-modules = ["tbomctl", "tbom_mcp_server"]
 
 [tool.ruff]
 line-length = 120
@@ -59,7 +67,7 @@ disallow_incomplete_defs = true
 module = "jcs.*"
 ignore_missing_imports = true
 
-[tool.pytest]
+[tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
@@ -67,7 +75,6 @@ python_functions = ["test_*"]
 addopts = [
     "--strict-markers",
     "--strict-config",
-    "--hypothesis-profile=ci",
 ]
 asyncio_mode = "auto"
 markers = [

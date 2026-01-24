@@ -35,8 +35,8 @@ TEST_ARTIFACT := tbom-test-artifact.txt
 DIST_FILES := $(MD) $(HTML) $(PDF) $(SCHEMA) $(KEYS_SCHEMA) $(EXAMPLES) \
 	$(SIGNED) $(KEYS) $(PRIVATE_KEY) $(TOOL_DEF) $(TEST_ARTIFACT) \
 	tbomctl.py tbom_mcp_server.py py.typed Makefile build.sh requirements.txt $(LOCK_FILE) $(BUILD_VERSIONS) \
-	pyproject.toml README.md tbom-development-history.md $(PROVENANCE_SCRIPT) scripts/build_binaries.py \
-	tests/test_tbomctl.py tests/test_mcp_integration.py \
+	pyproject.toml README.md tbom-development-history.md $(PROVENANCE_SCRIPT) scripts/build_binaries.py scripts/ai_eval.py scripts/mutation_test.py \
+	tests/test_tbomctl.py tests/test_mcp_integration.py TESTING.md \
 	EXECUTIVE_SUMMARY.md FAQ.md RELEASE_NOTES_v1.0.2.md \
 	LICENSE CONTRIBUTING.md SECURITY.md SECURITY_AUDIT.md PERFORMANCE.md
 
@@ -49,11 +49,15 @@ ifneq ($(wildcard .venv/bin/python),)
 PYTHON := .venv/bin/python
 endif
 
-.PHONY: all check check-python validate-examples verify-testvector html pdf versions lock dist binaries keygen sign release verify-release clean lint test integration-test
+.PHONY: all check check-python validate-examples verify-testvector html pdf versions lock dist binaries keygen sign release verify-release clean lint test integration-test verify verify-strict ai-eval mutation-test
 
 all: check html pdf
 
 check: validate-examples verify-testvector lint test
+
+verify: check integration-test ai-eval
+
+verify-strict: verify mutation-test
 
 check-python:
 	@[ -x "$(PYTHON)" ] || { echo "python3 is required"; exit 1; }
@@ -77,6 +81,14 @@ test: check-python
 
 integration-test: check-python
 	@$(PYTHON) -m pytest tests/ -m "integration"
+
+ai-eval: check-python
+	@mkdir -p build
+	@$(PYTHON) scripts/ai_eval.py --output build/ai-eval.json
+
+mutation-test: check-python
+	@mkdir -p build
+	@$(PYTHON) scripts/mutation_test.py --output build/mutation-report.json
 
 html:
 	@command -v $(PANDOC) >/dev/null || { echo \"pandoc is required for HTML\"; exit 1; }

@@ -73,7 +73,11 @@ We use `ruff` for linting, `mypy` for types, and `pytest` for tests.
 make lint
 make test
 make integration-test  # requires the MCP Python package
+make verify            # full verification suite
+make verify-strict     # adds mutation tests
 ```
+
+See `TESTING.md` for full verification details.
 
 ## Release Bundle
 

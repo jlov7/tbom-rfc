@@ -25,7 +25,7 @@ import json
 import sys
 import uuid
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 try:
     from jsonschema import Draft202012Validator, FormatChecker
@@ -117,6 +117,8 @@ def dump_json(obj: Any, *, pretty: bool = True) -> str:
 # ---------------------------
 
 DIGEST_FIELDS = ["name", "description", "inputSchema", "outputSchema", "annotations"]
+RESOURCE_DIGEST_FIELDS = ["uri", "description", "mimeType"]
+PROMPT_DIGEST_FIELDS = ["name", "description", "arguments"]
 
 
 def tool_digest_input(tool: dict[str, Any]) -> dict[str, Any]:
@@ -160,6 +162,80 @@ def definition_digest_covers(tool: dict[str, Any]) -> str:
     """
     digest_obj = tool_digest_input(tool)
     fields = [f for f in DIGEST_FIELDS if f in digest_obj]
+    return "{" + ",".join(fields) + "}"
+
+
+def resource_digest_input(resource: dict[str, Any]) -> dict[str, Any]:
+    """
+    Build the digest input object for a resource definition, per TBOM v1.0.2:
+      { uri, description, (mimeType?) }
+    """
+    required = ["uri", "description"]
+    for r in required:
+        if r not in resource:
+            raise ValueError(f"Resource definition missing required field: {r}")
+
+    digest_obj: dict[str, Any] = {
+        "uri": resource["uri"],
+        "description": resource["description"],
+    }
+
+    if "mimeType" in resource and resource["mimeType"] is not None:
+        digest_obj["mimeType"] = resource["mimeType"]
+
+    return dict(strip_null_object_keys(digest_obj))
+
+
+def compute_resource_digest(resource: dict[str, Any]) -> tuple[str, str]:
+    """
+    Returns (canonical_json, digest_value) where digest_value is "sha256:<hex>".
+    """
+    digest_obj = resource_digest_input(resource)
+    canonical = jcs_canonicalize(digest_obj)
+    digest_value = "sha256:" + sha256_hex(canonical.encode("utf-8"))
+    return canonical, digest_value
+
+
+def resource_digest_covers(resource: dict[str, Any]) -> str:
+    digest_obj = resource_digest_input(resource)
+    fields = [f for f in RESOURCE_DIGEST_FIELDS if f in digest_obj]
+    return "{" + ",".join(fields) + "}"
+
+
+def prompt_digest_input(prompt: dict[str, Any]) -> dict[str, Any]:
+    """
+    Build the digest input object for a prompt definition, per TBOM v1.0.2:
+      { name, description, (arguments?) }
+    """
+    required = ["name", "description"]
+    for r in required:
+        if r not in prompt:
+            raise ValueError(f"Prompt definition missing required field: {r}")
+
+    digest_obj: dict[str, Any] = {
+        "name": prompt["name"],
+        "description": prompt["description"],
+    }
+
+    if "arguments" in prompt and prompt["arguments"] is not None:
+        digest_obj["arguments"] = prompt["arguments"]
+
+    return dict(strip_null_object_keys(digest_obj))
+
+
+def compute_prompt_digest(prompt: dict[str, Any]) -> tuple[str, str]:
+    """
+    Returns (canonical_json, digest_value) where digest_value is "sha256:<hex>".
+    """
+    digest_obj = prompt_digest_input(prompt)
+    canonical = jcs_canonicalize(digest_obj)
+    digest_value = "sha256:" + sha256_hex(canonical.encode("utf-8"))
+    return canonical, digest_value
+
+
+def prompt_digest_covers(prompt: dict[str, Any]) -> str:
+    digest_obj = prompt_digest_input(prompt)
+    fields = [f for f in PROMPT_DIGEST_FIELDS if f in digest_obj]
     return "{" + ",".join(fields) + "}"
 
 
@@ -303,6 +379,16 @@ def sign_tbom_jws_detached(
     signing_input = (protected_b64 + "." + payload_b64).encode("ascii")
 
     priv = load_private_key_from_jwk(private_jwk)
+    if tbom_algorithm == "Ed25519" and not isinstance(priv, ed25519.Ed25519PrivateKey):
+        raise ValueError("TBOM algorithm Ed25519 requires OKP/Ed25519 private key")
+    if tbom_algorithm == "ECDSA-P256" and (
+        not isinstance(priv, ec.EllipticCurvePrivateKey) or private_jwk.get("crv") != "P-256"
+    ):
+        raise ValueError("TBOM algorithm ECDSA-P256 requires EC/P-256 private key")
+    if tbom_algorithm == "ECDSA-P384" and (
+        not isinstance(priv, ec.EllipticCurvePrivateKey) or private_jwk.get("crv") != "P-384"
+    ):
+        raise ValueError("TBOM algorithm ECDSA-P384 requires EC/P-384 private key")
     if isinstance(priv, ed25519.Ed25519PrivateKey):
         sig = priv.sign(signing_input)
         sig_b64 = b64url_encode(sig)
@@ -469,43 +555,71 @@ def cmd_check(args: argparse.Namespace) -> int:
             print(f"[SCHEMA] {path}: {err.message}", file=sys.stderr)
         return 2
 
+    def verify_definition_digests(
+        items: Any,
+        label: str,
+        compute_digest: Callable[[dict[str, Any]], tuple[str, str]],
+        covers_func: Callable[[dict[str, Any]], str],
+    ) -> bool:
+        if not isinstance(items, list):
+            raise SystemExit(f"TBOM {label} must be an array")
+        ok_local = True
+        for i, item in enumerate(items):
+            if not isinstance(item, dict):
+                print(f"[FAIL] {label}[{i}] is not an object", file=sys.stderr)
+                ok_local = False
+                continue
+            dd = item.get("definitionDigest")
+            if not isinstance(dd, dict):
+                print(f"[FAIL] {label}[{i}] missing definitionDigest", file=sys.stderr)
+                ok_local = False
+                continue
+            expected = dd.get("value")
+            try:
+                canonical, computed = compute_digest(item)
+            except ValueError as e:
+                ident = item.get("name") or item.get("uri")
+                print(f"[FAIL] {label}[{i}] {ident}: {e}", file=sys.stderr)
+                ok_local = False
+                continue
+            if expected != computed:
+                ident = item.get("name") or item.get("uri")
+                print(f"[FAIL] {label}[{i}] {ident}: definitionDigest mismatch", file=sys.stderr)
+                print(f"  expected: {expected}", file=sys.stderr)
+                print(f"  computed: {computed}", file=sys.stderr)
+                if args.debug:
+                    print(f"  canonical: {canonical}", file=sys.stderr)
+                ok_local = False
+            covers = dd.get("covers")
+            if covers is not None:
+                try:
+                    expected_covers = covers_func(item)
+                except ValueError as e:
+                    ident = item.get("name") or item.get("uri")
+                    print(f"[FAIL] {label}[{i}] {ident}: {e}", file=sys.stderr)
+                    ok_local = False
+                else:
+                    if covers != expected_covers:
+                        ident = item.get("name") or item.get("uri")
+                        print(f"[FAIL] {label}[{i}] {ident}: definitionDigest.covers mismatch", file=sys.stderr)
+                        print(f"  expected: {expected_covers}", file=sys.stderr)
+                        print(f"  found: {covers}", file=sys.stderr)
+                        ok_local = False
+        return ok_local
+
     # verify tool digests
     tools = tbom.get("tools")
-    if not isinstance(tools, list):
-        raise SystemExit("TBOM tools must be an array")
-    ok = True
-    for i, t in enumerate(tools):
-        if not isinstance(t, dict):
-            print(f"[FAIL] tools[{i}] is not an object", file=sys.stderr)
-            ok = False
-            continue
-        dd = t.get("definitionDigest")
-        if not isinstance(dd, dict):
-            print(f"[FAIL] tools[{i}] missing definitionDigest", file=sys.stderr)
-            ok = False
-            continue
-        expected = dd.get("value")
-        canonical, computed = compute_tool_digest(t)
-        if expected != computed:
-            print(f"[FAIL] tools[{i}] {t.get('name')}: definitionDigest mismatch", file=sys.stderr)
-            print(f"  expected: {expected}", file=sys.stderr)
-            print(f"  computed: {computed}", file=sys.stderr)
-            if args.debug:
-                print(f"  canonical: {canonical}", file=sys.stderr)
-            ok = False
-        covers = dd.get("covers")
-        if covers is not None:
-            try:
-                expected_covers = definition_digest_covers(t)
-            except ValueError as e:
-                print(f"[FAIL] tools[{i}] {t.get('name')}: {e}", file=sys.stderr)
-                ok = False
-            else:
-                if covers != expected_covers:
-                    print(f"[FAIL] tools[{i}] {t.get('name')}: definitionDigest.covers mismatch", file=sys.stderr)
-                    print(f"  expected: {expected_covers}", file=sys.stderr)
-                    print(f"  found: {covers}", file=sys.stderr)
-                    ok = False
+    ok = verify_definition_digests(tools, "tools", compute_tool_digest, definition_digest_covers)
+
+    # verify resource digests
+    resources = tbom.get("resources")
+    if resources is not None:
+        ok = verify_definition_digests(resources, "resources", compute_resource_digest, resource_digest_covers) and ok
+
+    # verify prompt digests
+    prompts = tbom.get("prompts")
+    if prompts is not None:
+        ok = verify_definition_digests(prompts, "prompts", compute_prompt_digest, prompt_digest_covers) and ok
 
     # optional: verify signatures with local keys doc
     if args.keys_schema and not args.keys:
@@ -626,12 +740,18 @@ def cmd_sign_jws(args: argparse.Namespace) -> int:
         "value": jws,
     }
 
-    # Replace or append signature
+    # Replace or append signature (drop placeholder if present)
     sigs = tbom.get("signatures")
     if not isinstance(sigs, list):
         tbom["signatures"] = [sig_entry]
     else:
-        sigs.append(sig_entry)
+        filtered: list[Any] = []
+        for s in sigs:
+            if isinstance(s, dict) and s.get("value") == "<detached-jws-compact-serialization>":
+                continue
+            filtered.append(s)
+        filtered.append(sig_entry)
+        tbom["signatures"] = filtered
 
     Path(args.output).parent.mkdir(parents=True, exist_ok=True)
     Path(args.output).write_text(dump_json(tbom, pretty=True), encoding="utf-8")
@@ -661,37 +781,66 @@ def cmd_verify_drift(args: argparse.Namespace) -> int:
     if not isinstance(tbom_tools, list):
         raise SystemExit("TBOM tools must be an array")
 
-    # Build lookup by name for TBOM tools
-    tbom_by_name: dict[str, dict[str, Any]] = {}
-    for t in tbom_tools:
-        if isinstance(t, dict) and "name" in t:
-            tbom_by_name[t["name"]] = t
-
     ok = True
     checked = 0
     drifted = 0
     missing_in_tbom = 0
     missing_in_live = 0
+    ambiguous = 0
+
+    # Build lookup by toolId and name for TBOM tools
+    tbom_by_id: dict[str, int] = {}
+    tbom_by_name: dict[str, list[int]] = {}
+    for idx, t in enumerate(tbom_tools):
+        if not isinstance(t, dict):
+            continue
+        tool_id = t.get("toolId")
+        name = t.get("name")
+        if isinstance(tool_id, str) and tool_id:
+            if tool_id in tbom_by_id:
+                print(f"[FAIL] Duplicate toolId '{tool_id}' in TBOM", file=sys.stderr)
+                ok = False
+            else:
+                tbom_by_id[tool_id] = idx
+        if isinstance(name, str) and name:
+            tbom_by_name.setdefault(name, []).append(idx)
 
     # Check each live tool against TBOM
-    live_names = set()
+    matched_tbom: set[int] = set()
     for live_tool in live_tools:
         if not isinstance(live_tool, dict):
             continue
+        tool_id = live_tool.get("toolId")
         name = live_tool.get("name")
-        if not name:
+        if not tool_id and not name:
             continue
-        live_names.add(name)
 
-        if name not in tbom_by_name:
-            print(f"[WARN] Tool '{name}' in live server but not in TBOM", file=sys.stderr)
+        tbom_index: int | None = None
+        if isinstance(tool_id, str) and tool_id in tbom_by_id:
+            tbom_index = tbom_by_id[tool_id]
+        elif isinstance(name, str) and name in tbom_by_name:
+            indices = tbom_by_name[name]
+            if len(indices) > 1:
+                print(
+                    f"[FAIL] Tool name '{name}' is ambiguous in TBOM (multiple entries without toolId)",
+                    file=sys.stderr,
+                )
+                ok = False
+                ambiguous += 1
+                continue
+            tbom_index = indices[0]
+        else:
+            label = tool_id or name
+            print(f"[WARN] Tool '{label}' in live server but not in TBOM", file=sys.stderr)
             missing_in_tbom += 1
             continue
 
-        tbom_tool = tbom_by_name[name]
+        matched_tbom.add(tbom_index)
+        tbom_tool = tbom_tools[tbom_index]
         dd = tbom_tool.get("definitionDigest")
         if not isinstance(dd, dict):
-            print(f"[WARN] Tool '{name}' in TBOM missing definitionDigest", file=sys.stderr)
+            label = tool_id or name
+            print(f"[WARN] Tool '{label}' in TBOM missing definitionDigest", file=sys.stderr)
             continue
 
         expected_digest = dd.get("value")
@@ -700,14 +849,16 @@ def cmd_verify_drift(args: argparse.Namespace) -> int:
         try:
             _, computed_digest = compute_tool_digest(live_tool)
         except ValueError as e:
-            print(f"[FAIL] Tool '{name}': cannot compute digest: {e}", file=sys.stderr)
+            label = tool_id or name
+            print(f"[FAIL] Tool '{label}': cannot compute digest: {e}", file=sys.stderr)
             ok = False
             drifted += 1
             continue
 
         checked += 1
         if expected_digest != computed_digest:
-            print(f"[DRIFT] Tool '{name}': metadata has changed!", file=sys.stderr)
+            label = tool_id or name
+            print(f"[DRIFT] Tool '{label}': metadata has changed!", file=sys.stderr)
             print(f"  TBOM digest:  {expected_digest}", file=sys.stderr)
             print(f"  Live digest:  {computed_digest}", file=sys.stderr)
             if args.verbose:
@@ -716,18 +867,24 @@ def cmd_verify_drift(args: argparse.Namespace) -> int:
             ok = False
             drifted += 1
         elif args.verbose:
-            print(f"[OK] Tool '{name}': digest matches")
+            label = tool_id or name
+            print(f"[OK] Tool '{label}': digest matches")
 
     # Check for tools in TBOM but not in live server
-    for tbom_name in tbom_by_name:
-        if tbom_name not in live_names:
-            print(f"[WARN] Tool '{tbom_name}' in TBOM but not in live server", file=sys.stderr)
-            missing_in_live += 1
+    for idx, tbom_tool in enumerate(tbom_tools):
+        if idx in matched_tbom:
+            continue
+        if not isinstance(tbom_tool, dict):
+            continue
+        label = tbom_tool.get("toolId") or tbom_tool.get("name") or f"index {idx}"
+        print(f"[WARN] Tool '{label}' in TBOM but not in live server", file=sys.stderr)
+        missing_in_live += 1
 
     # Summary
     print("\nDrift detection summary:")
     print(f"  Tools checked: {checked}")
     print(f"  Drifted: {drifted}")
+    print(f"  Ambiguous: {ambiguous}")
     print(f"  Missing in TBOM: {missing_in_tbom}")
     print(f"  Missing in live: {missing_in_live}")
 
