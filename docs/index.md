@@ -20,13 +20,12 @@
 </div>
 
 <pre class="tbom-ascii">
-  _______ ____  ____  __  __
- |__   __|  _ \|  _ \|  \/  |
-    | |  | |_) | |_) | \  / |
-    | |  |  _ <|  _ <| |\/| |
-    | |  | |_) | |_) | |  | |
-    |_|  |____/|____/|_|  |_|
-  [build] -> [sign] -> [verify] -> [trust]
+TTTTT BBBB  OOO  M   M
+  T   B   B O   O MM MM
+  T   BBBB  O   O M M M
+  T   B   B O   O M   M
+  T   BBBB  OOO  M   M
+[build] -> [sign] -> [verify] -> [trust]
 </pre>
 
 ## Why it matters
