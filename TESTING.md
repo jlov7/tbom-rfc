@@ -45,6 +45,7 @@ make mutation-test
 ```bash
 make showcase
 make showcase-strict
+make demo-video
 ```
 
 ## Docs site (optional)

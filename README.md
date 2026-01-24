@@ -55,6 +55,7 @@ Generate a narrated demo and evidence pack (logs + metrics):
 
 ```bash
 make showcase
+make demo-video
 ```
 
 Artifacts land in `build/showcase/`.

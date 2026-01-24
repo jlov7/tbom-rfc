@@ -16,6 +16,7 @@ PROVENANCE := $(DIST_DIR)/provenance.json
 PROVENANCE_SIG := $(DIST_DIR)/provenance.json.sig
 PROVENANCE_SCRIPT := scripts/generate_provenance.py
 SHOWCASE_DIR ?= build/showcase
+DEMO_VIDEO ?= $(SHOWCASE_DIR)/tbom-demo.mp4
 
 SCHEMA := tbom-schema-v1.0.2.json
 KEYS_SCHEMA := tbom-keys-schema-v1.0.1.json
@@ -29,7 +30,7 @@ TEST_ARTIFACT := tbom-test-artifact.txt
 DIST_FILES := $(SCHEMA) $(KEYS_SCHEMA) $(EXAMPLES) \
 	$(SIGNED) $(KEYS) $(PRIVATE_KEY) $(TOOL_DEF) $(TEST_ARTIFACT) \
 	tbomctl.py tbom_mcp_server.py py.typed Makefile build.sh requirements.txt $(LOCK_FILE) $(BUILD_VERSIONS) \
-	pyproject.toml README.md tbom-development-history.md $(PROVENANCE_SCRIPT) scripts/build_binaries.py scripts/ai_eval.py scripts/mutation_test.py scripts/showcase.py \
+	pyproject.toml README.md tbom-development-history.md $(PROVENANCE_SCRIPT) scripts/build_binaries.py scripts/ai_eval.py scripts/mutation_test.py scripts/showcase.py scripts/render_demo_video.py \
 	tests/test_tbomctl.py tests/test_mcp_integration.py TESTING.md \
 	EXECUTIVE_SUMMARY.md DEMO_SCRIPT.md ARCHITECTURE.md FAQ.md RELEASE_NOTES_v1.0.2.md docs/TERMINAL_DEMO.md docs/showcase/index.md \
 	docs/index.md docs/demo.md docs/architecture.md docs/trust.md docs/requirements.txt docs/stylesheets/extra.css docs/assets/tbom-sigil.svg mkdocs.yml \
@@ -38,7 +39,7 @@ ifneq ($(wildcard .venv/bin/python),)
 PYTHON := .venv/bin/python
 endif
 
-.PHONY: all check check-python validate-examples verify-testvector versions lock dist binaries keygen sign release verify-release clean lint test integration-test verify verify-strict ai-eval mutation-test showcase showcase-strict
+.PHONY: all check check-python validate-examples verify-testvector versions lock dist binaries keygen sign release verify-release clean lint test integration-test verify verify-strict ai-eval mutation-test showcase showcase-strict demo-video demo-video-strict
 
 all: verify
 
@@ -84,6 +85,12 @@ showcase: check-python
 
 showcase-strict: check-python
 	@$(PYTHON) scripts/showcase.py --output-dir $(SHOWCASE_DIR) --strict
+
+demo-video: check-python
+	@$(PYTHON) scripts/render_demo_video.py --output $(DEMO_VIDEO) --showcase-dir $(SHOWCASE_DIR)
+
+demo-video-strict: check-python
+	@$(PYTHON) scripts/render_demo_video.py --output $(DEMO_VIDEO) --showcase-dir $(SHOWCASE_DIR) --strict
 
 versions:
 	@{ \

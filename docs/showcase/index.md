@@ -21,6 +21,12 @@ For a stricter run (includes mutation testing):
 make showcase-strict
 ```
 
+Generate a video from the showcase log:
+
+```bash
+make demo-video
+```
+
 ## What you get
 
 Artifacts are written to `build/showcase/`:
@@ -30,6 +36,7 @@ Artifacts are written to `build/showcase/`:
 - `mutation-report.json` - mutation results (strict mode only)
 - `live-tools-drift.json` - drifted tools list used in the demo
 - `evidence-pack.zip` - all of the above in one bundle
+- `tbom-demo.mp4` - auto-generated demo video
 
 ## Sample excerpt
 
