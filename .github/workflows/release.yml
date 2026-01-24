@@ -35,6 +35,14 @@ jobs:
           make keygen
           make release
           make verify-release
+      - name: Build showcase evidence pack
+        run: make showcase-strict SHOWCASE_DIR=dist/showcase
+      - name: Generate SBOM (SPDX)
+        uses: anchore/sbom-action@v0
+        with:
+          path: .
+          format: spdx-json
+          output-file: dist/sbom.spdx.json
       - name: Upload dist artifacts
         uses: actions/upload-artifact@v4
         with:

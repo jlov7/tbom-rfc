@@ -62,3 +62,5 @@ DRIFT detected: tool metadata changed since release
 ## Tell me it worked
 
 If the output ends with `OK`, the TBOM is valid and matches the tool list.
+
+For a narrated live demo, see `DEMO_SCRIPT.md`.

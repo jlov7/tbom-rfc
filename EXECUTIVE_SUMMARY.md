@@ -2,7 +2,7 @@
 
 ## Overview
 
-TBOM (Tool Bill of Materials) is a community RFC for the Model Context Protocol (MCP). It defines a signed, machine-readable manifest that binds a tool's published description and schema to the exact release that shipped. This makes metadata drift or tampering detectable.
+TBOM (Tool Bill of Materials) is a standard for the Model Context Protocol (MCP). It defines a signed, machine-readable manifest that binds a tool's published description and schema to the exact release that shipped. This makes metadata drift or tampering detectable.
 
 ## Why it matters
 
@@ -35,3 +35,7 @@ TBOM (Tool Bill of Materials) is a community RFC for the Model Context Protocol 
 - **Integrity**: detect silent changes to tool descriptions or schemas
 - **Accountability**: create auditable trails for tool releases
 - **Risk reduction**: faster incident response and safer rollbacks
+
+## Demo in 60 seconds
+
+Use `DEMO_SCRIPT.md` for a copy/paste live demo, and `ARCHITECTURE.md` for the visual system overview.

@@ -15,6 +15,7 @@ LOCK_FILE := requirements.lock
 PROVENANCE := $(DIST_DIR)/provenance.json
 PROVENANCE_SIG := $(DIST_DIR)/provenance.json.sig
 PROVENANCE_SCRIPT := scripts/generate_provenance.py
+SHOWCASE_DIR ?= build/showcase
 
 SCHEMA := tbom-schema-v1.0.2.json
 KEYS_SCHEMA := tbom-keys-schema-v1.0.1.json
@@ -28,15 +29,15 @@ TEST_ARTIFACT := tbom-test-artifact.txt
 DIST_FILES := $(SCHEMA) $(KEYS_SCHEMA) $(EXAMPLES) \
 	$(SIGNED) $(KEYS) $(PRIVATE_KEY) $(TOOL_DEF) $(TEST_ARTIFACT) \
 	tbomctl.py tbom_mcp_server.py py.typed Makefile build.sh requirements.txt $(LOCK_FILE) $(BUILD_VERSIONS) \
-	pyproject.toml README.md tbom-development-history.md $(PROVENANCE_SCRIPT) scripts/build_binaries.py scripts/ai_eval.py scripts/mutation_test.py \
+	pyproject.toml README.md tbom-development-history.md $(PROVENANCE_SCRIPT) scripts/build_binaries.py scripts/ai_eval.py scripts/mutation_test.py scripts/showcase.py \
 	tests/test_tbomctl.py tests/test_mcp_integration.py TESTING.md \
-	EXECUTIVE_SUMMARY.md FAQ.md RELEASE_NOTES_v1.0.2.md docs/TERMINAL_DEMO.md \
+	EXECUTIVE_SUMMARY.md DEMO_SCRIPT.md ARCHITECTURE.md FAQ.md RELEASE_NOTES_v1.0.2.md docs/TERMINAL_DEMO.md docs/showcase/README.md \
 	LICENSE CONTRIBUTING.md SECURITY.md SECURITY_AUDIT.md PERFORMANCE.md CODE_OF_CONDUCT.md
 ifneq ($(wildcard .venv/bin/python),)
 PYTHON := .venv/bin/python
 endif
 
-.PHONY: all check check-python validate-examples verify-testvector versions lock dist binaries keygen sign release verify-release clean lint test integration-test verify verify-strict ai-eval mutation-test
+.PHONY: all check check-python validate-examples verify-testvector versions lock dist binaries keygen sign release verify-release clean lint test integration-test verify verify-strict ai-eval mutation-test showcase showcase-strict
 
 all: verify
 
@@ -76,6 +77,12 @@ ai-eval: check-python
 mutation-test: check-python
 	@mkdir -p build
 	@$(PYTHON) scripts/mutation_test.py --output build/mutation-report.json
+
+showcase: check-python
+	@$(PYTHON) scripts/showcase.py --output-dir $(SHOWCASE_DIR)
+
+showcase-strict: check-python
+	@$(PYTHON) scripts/showcase.py --output-dir $(SHOWCASE_DIR) --strict
 
 versions:
 	@{ \

@@ -40,11 +40,9 @@ make ai-eval
 make mutation-test
 ```
 
-## Docs build (optional)
-
-HTML/PDF generation requires `pandoc` and a PDF engine such as `latexmk`/`xelatex`:
+## Showcase pack (optional)
 
 ```bash
-make html
-make pdf
+make showcase
+make showcase-strict
 ```

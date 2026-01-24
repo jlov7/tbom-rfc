@@ -11,6 +11,8 @@ This release packages the TBOM reference implementation as a verifiable, signed 
 - Reference MCP server (`tbom_mcp_server.py`) demonstrating TBOM publication
 - Signed release bundle with checksums and provenance
 - CI workflow for tagged release verification
+- SBOM generation for release artifacts
+- Showcase evidence pack for live demos
 
 ## Artifacts
 
@@ -18,6 +20,8 @@ This release packages the TBOM reference implementation as a verifiable, signed 
 - `dist/SHA256SUMS.txt` and `dist/SHA256SUMS.txt.sig`
 - `dist/provenance.json` and `dist/provenance.json.sig`
 - `dist/RELEASE_SIGNING_KEY.pub`
+- `dist/sbom.spdx.json`
+- `dist/showcase/evidence-pack.zip`
 
 ## Verify the release
 
