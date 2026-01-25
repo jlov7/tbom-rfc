@@ -10,6 +10,7 @@
       </p>
       <div class="tbom-hero__cta">
         <a class="tbom-button" href="demo/">Run the 60-second demo</a>
+        <a class="tbom-button tbom-button--ghost" href="explainer/">Read the explainer</a>
         <a class="tbom-button tbom-button--ghost" href="showcase/">Open the showcase pack</a>
       </div>
     </div>
@@ -20,11 +21,13 @@
 </div>
 
 <pre class="tbom-ascii">
-TTTTT BBBB  OOO  M   M
-  T   B   B O   O MM MM
-  T   BBBB  O   O M M M
-  T   B   B O   O M   M
-  T   BBBB  OOO  M   M
+/-----------------------------------\
+| TTTTT BBBB  OOO  M   M            |
+|   T   B   B O   O MM MM           |
+|   T   BBBB  O   O M M M           |
+|   T   B   B O   O M   M           |
+|   T   BBBB  OOO  M   M            |
+\-----------------------------------/
 [build] -> [sign] -> [verify] -> [trust]
 </pre>
 
@@ -32,6 +35,13 @@ TTTTT BBBB  OOO  M   M
 
 TBOM makes tool metadata tamper-evident. If a tool's description or schema changes
 after release, the digest check flips from OK to DRIFT.
+
+## TBOM for humans
+
+Think of TBOM as a signed nutrition label for AI tools. It records what the tool claims to do, signs it,
+and lets you prove the live metadata still matches the label.
+
+![TBOM explainer diagram](assets/tbom-explainer.svg)
 
 ## What you get
 
@@ -76,3 +86,7 @@ make showcase
 ```
 
 Artifacts land in `build/showcase/` with a demo log, metrics, and a zipped evidence pack.
+
+## Demo preview
+
+[![TBOM demo preview](assets/tbom-demo-still.png)](assets/tbom-demo.gif)

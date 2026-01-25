@@ -10,6 +10,12 @@ source .venv/bin/activate
 python -m pip install -r requirements.lock
 ```
 
+Optional (to use `tbomctl` command):
+
+```bash
+make install-cli
+```
+
 ## Live demo (copy/paste)
 
 1) Verify a signed TBOM against the schema:
@@ -17,6 +23,8 @@ python -m pip install -r requirements.lock
 ```bash
 python tbomctl.py check --schema tbom-schema-v1.0.2.json tbom-example-full-v1.0.2.json
 ```
+
+If you installed the CLI, you can use `tbomctl` instead of `python tbomctl.py`.
 
 2) Verify drift with the exact tools list (expected OK):
 

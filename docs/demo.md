@@ -10,6 +10,8 @@ python tbomctl.py check --schema tbom-schema-v1.0.2.json tbom-example-full-v1.0.
 
 Expected output: `OK`.
 
+If you installed the CLI (`make install-cli`), you can use `tbomctl` instead of `python tbomctl.py`.
+
 ## Step 2: verify drift (expected OK)
 
 ```bash

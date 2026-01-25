@@ -26,7 +26,12 @@ Generate a video from the showcase log:
 ```bash
 make demo-video
 make demo-video-strict
+make demo-video-light
+make demo-gif
+make demo-gif-light
 ```
+
+Voiceover is generated automatically if `say` (macOS) or `espeak` is available.
 
 ## What you get
 
@@ -38,6 +43,9 @@ Artifacts are written to `build/showcase/`:
 - `live-tools-drift.json` - drifted tools list used in the demo
 - `evidence-pack.zip` - all of the above in one bundle
 - `tbom-demo.mp4` - auto-generated demo video
+- `tbom-demo-light.mp4` - light theme variant (optional)
+- `tbom-demo.gif` - teaser GIF (optional)
+- `tbom-demo-light.gif` - light theme GIF (optional)
 
 ## Sample excerpt
 

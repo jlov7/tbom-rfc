@@ -47,6 +47,9 @@ make showcase
 make showcase-strict
 make demo-video
 make demo-video-strict
+make demo-video-light
+make demo-gif
+make demo-gif-light
 ```
 
 ## Docs site (optional)

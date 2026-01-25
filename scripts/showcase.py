@@ -65,6 +65,10 @@ def main() -> int:
     drift_path = out_dir / "live-tools-drift.json"
     metrics_path = out_dir / "metrics.json"
     pack_path = out_dir / "evidence-pack.zip"
+    demo_video = out_dir / "tbom-demo.mp4"
+    demo_video_light = out_dir / "tbom-demo-light.mp4"
+    demo_gif = out_dir / "tbom-demo.gif"
+    demo_gif_light = out_dir / "tbom-demo-light.gif"
 
     log_lines: list[str] = []
     steps: list[dict[str, object]] = []
@@ -187,6 +191,9 @@ def main() -> int:
     artifacts = [demo_log, metrics_path, ai_eval_path, drift_path]
     if args.strict and mutation_path.exists():
         artifacts.append(mutation_path)
+    for artifact in (demo_video, demo_video_light, demo_gif, demo_gif_light):
+        if artifact.exists():
+            artifacts.append(artifact)
 
     with zipfile.ZipFile(pack_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
         for artifact in artifacts:

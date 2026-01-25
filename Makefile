@@ -17,6 +17,9 @@ PROVENANCE_SIG := $(DIST_DIR)/provenance.json.sig
 PROVENANCE_SCRIPT := scripts/generate_provenance.py
 SHOWCASE_DIR ?= build/showcase
 DEMO_VIDEO ?= $(SHOWCASE_DIR)/tbom-demo.mp4
+DEMO_VIDEO_LIGHT ?= $(SHOWCASE_DIR)/tbom-demo-light.mp4
+DEMO_GIF ?= $(SHOWCASE_DIR)/tbom-demo.gif
+DEMO_GIF_LIGHT ?= $(SHOWCASE_DIR)/tbom-demo-light.gif
 
 SCHEMA := tbom-schema-v1.0.2.json
 KEYS_SCHEMA := tbom-keys-schema-v1.0.1.json
@@ -30,16 +33,17 @@ TEST_ARTIFACT := tbom-test-artifact.txt
 DIST_FILES := $(SCHEMA) $(KEYS_SCHEMA) $(EXAMPLES) \
 	$(SIGNED) $(KEYS) $(PRIVATE_KEY) $(TOOL_DEF) $(TEST_ARTIFACT) \
 	tbomctl.py tbom_mcp_server.py py.typed Makefile build.sh requirements.txt $(LOCK_FILE) $(BUILD_VERSIONS) \
-	pyproject.toml README.md tbom-development-history.md $(PROVENANCE_SCRIPT) scripts/build_binaries.py scripts/ai_eval.py scripts/mutation_test.py scripts/showcase.py scripts/render_demo_video.py \
+	pyproject.toml README.md tbom-development-history.md $(PROVENANCE_SCRIPT) scripts/build_binaries.py scripts/ai_eval.py scripts/mutation_test.py scripts/showcase.py scripts/render_demo_video.py scripts/render_demo_gif.py \
 	tests/test_tbomctl.py tests/test_mcp_integration.py TESTING.md \
 	EXECUTIVE_SUMMARY.md DEMO_SCRIPT.md ARCHITECTURE.md FAQ.md RELEASE_NOTES_v1.0.2.md docs/TERMINAL_DEMO.md docs/showcase/index.md \
-	docs/index.md docs/demo.md docs/architecture.md docs/trust.md docs/requirements.txt docs/stylesheets/extra.css docs/assets/tbom-sigil.svg mkdocs.yml \
+	docs/index.md docs/demo.md docs/explainer.md docs/architecture.md docs/trust.md docs/requirements.txt docs/stylesheets/extra.css \
+	docs/assets/tbom-sigil.svg docs/assets/tbom-explainer.svg docs/assets/tbom-demo-still.png docs/assets/tbom-demo.gif mkdocs.yml \
 	LICENSE CONTRIBUTING.md SECURITY.md SECURITY_AUDIT.md PERFORMANCE.md CODE_OF_CONDUCT.md
 ifneq ($(wildcard .venv/bin/python),)
 PYTHON := .venv/bin/python
 endif
 
-.PHONY: all check check-python validate-examples verify-testvector versions lock dist binaries keygen sign release verify-release clean lint test integration-test verify verify-strict ai-eval mutation-test showcase showcase-strict demo-video demo-video-strict
+.PHONY: all check check-python validate-examples verify-testvector versions lock dist binaries keygen sign release verify-release clean lint test integration-test verify verify-strict ai-eval mutation-test showcase showcase-strict demo-video demo-video-strict demo-video-light demo-video-light-strict demo-gif demo-gif-strict demo-gif-light install-cli
 
 all: verify
 
@@ -52,6 +56,9 @@ verify-strict: verify mutation-test
 check-python:
 	@[ -x "$(PYTHON)" ] || { echo "python3 is required"; exit 1; }
 	@$(PYTHON) -c "import jsonschema, cryptography, jcs; print(\"python deps OK\")"
+
+install-cli: check-python
+	@$(PYTHON) -m pip install -e .
 
 validate-examples: check-python
 	@for f in $(EXAMPLES); do \
@@ -87,10 +94,25 @@ showcase-strict: check-python
 	@$(PYTHON) scripts/showcase.py --output-dir $(SHOWCASE_DIR) --strict
 
 demo-video: check-python
-	@$(PYTHON) scripts/render_demo_video.py --output $(DEMO_VIDEO) --showcase-dir $(SHOWCASE_DIR)
+	@$(PYTHON) scripts/render_demo_video.py --output $(DEMO_VIDEO) --showcase-dir $(SHOWCASE_DIR) --theme dark
 
 demo-video-strict: check-python
-	@$(PYTHON) scripts/render_demo_video.py --output $(DEMO_VIDEO) --showcase-dir $(SHOWCASE_DIR) --strict
+	@$(PYTHON) scripts/render_demo_video.py --output $(DEMO_VIDEO) --showcase-dir $(SHOWCASE_DIR) --strict --theme dark
+
+demo-video-light: check-python
+	@$(PYTHON) scripts/render_demo_video.py --output $(DEMO_VIDEO_LIGHT) --showcase-dir $(SHOWCASE_DIR) --theme light
+
+demo-video-light-strict: check-python
+	@$(PYTHON) scripts/render_demo_video.py --output $(DEMO_VIDEO_LIGHT) --showcase-dir $(SHOWCASE_DIR) --strict --theme light
+
+demo-gif: demo-video
+	@$(PYTHON) scripts/render_demo_gif.py --input $(DEMO_VIDEO) --output $(DEMO_GIF)
+
+demo-gif-strict: demo-video-strict
+	@$(PYTHON) scripts/render_demo_gif.py --input $(DEMO_VIDEO) --output $(DEMO_GIF)
+
+demo-gif-light: demo-video-light
+	@$(PYTHON) scripts/render_demo_gif.py --input $(DEMO_VIDEO_LIGHT) --output $(DEMO_GIF_LIGHT)
 
 versions:
 	@{ \

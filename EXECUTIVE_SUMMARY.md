@@ -29,6 +29,14 @@ TBOM (Tool Bill of Materials) is a standard for the Model Context Protocol (MCP)
 
 "TBOM is a tamper-evident label for AI tools. It tells you who shipped the tool, what it claims to do, and lets you prove that description has not been silently changed."
 
+## The STAMP model
+
+- **Signed**: provenance is cryptographically verifiable
+- **Tamper-evident**: any metadata change flips to DRIFT
+- **Auditable**: re-check releases months later
+- **Machine-checkable**: policy engines can block drift automatically
+- **Provenance**: labels are tied to release bundles
+
 ## Value at a glance
 
 - **Trust**: confirm the publisher and signed metadata
