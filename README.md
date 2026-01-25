@@ -118,7 +118,7 @@ flowchart LR
     C --> D[Verifier]
     D --> E{Trusted?}
     E -->|Yes| F[Use tools]
-    E -->|No| G[Block + alert]
+    E -->|No| G[Block and alert]
 ```
 
 ```mermaid
@@ -126,9 +126,9 @@ sequenceDiagram
     participant Build as Build System
     participant Repo as Release Bundle
     participant Server as MCP Server
-    participant Agent as Agent/User
-    Build->>Repo: Generate TBOM + sign
-    Server->>Agent: Serve tools + TBOM
+    participant Agent as Agent or User
+    Build->>Repo: Generate TBOM and sign
+    Server->>Agent: Serve tools and TBOM
     Agent->>Agent: tbomctl verify-drift
     Agent-->>Agent: OK or DRIFT
 ```
