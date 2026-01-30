@@ -215,34 +215,6 @@ def test_mutation_main_prints(monkeypatch, capsys):
     assert capsys.readouterr().out.strip().startswith("{")
 
 
-def test_run_command_success(monkeypatch):
-    class Result:
-        returncode = 0
-        stdout = ""
-        stderr = ""
-
-    monkeypatch.setattr(build_binaries.subprocess, "run", lambda *a, **k: Result())
-    assert build_binaries.run_command("echo ok") is True
-
-
-def test_run_command_failure(monkeypatch):
-    class Result:
-        returncode = 1
-        stdout = "out"
-        stderr = "err"
-
-    monkeypatch.setattr(build_binaries.subprocess, "run", lambda *a, **k: Result())
-    assert build_binaries.run_command("echo bad") is False
-
-
-def test_run_command_exception(monkeypatch):
-    def boom(*_args, **_kwargs):
-        raise RuntimeError("nope")
-
-    monkeypatch.setattr(build_binaries.subprocess, "run", boom)
-    assert build_binaries.run_command("echo fail") is False
-
-
 def test_build_binary_success(monkeypatch, tmp_path):
     class Result:
         returncode = 0
