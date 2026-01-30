@@ -142,7 +142,7 @@ This repo includes a reference MCP server that demonstrates how to serve a TBOM 
 python tbom_mcp_server.py
 ```
 
-Note: the MCP server requires the `mcp` Python package (`python -m pip install mcp`).
+Note: the MCP server requires the `mcp` Python package (`python -m pip install mcp`), which requires Python 3.10+.
 
 ## Tooling
 

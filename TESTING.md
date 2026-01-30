@@ -19,7 +19,7 @@ make verify
 - signed test vector verification,
 - linting (`ruff`) and type checks (`mypy`),
 - unit tests (`pytest`),
-- integration tests (skipped if `mcp` is not installed),
+- integration tests (skipped if `mcp` is not installed; `mcp` requires Python 3.10+),
 - AI-style evals (`scripts/ai_eval.py`, output in `build/ai-eval.json`).
 
 ## Verify (strict)

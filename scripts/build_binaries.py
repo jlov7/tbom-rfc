@@ -10,26 +10,8 @@ import sys
 from pathlib import Path
 
 
-def run_command(cmd, cwd=None):
-    """Run a command and return True if successful."""
-    try:
-        result = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True)
-        if result.returncode != 0:
-            print(f"Command failed: {cmd}")
-            print(f"stdout: {result.stdout}")
-            print(f"stderr: {result.stderr}")
-            return False
-        return True
-    except Exception as e:
-        print(f"Error running command {cmd}: {e}")
-        return False
-
-
 def build_binary(script_path, output_name, dist_dir):
     """Build a single binary using PyInstaller."""
-    import subprocess
-    import sys
-
     cmd = [
         sys.executable,
         "-m",

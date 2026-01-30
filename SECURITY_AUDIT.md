@@ -81,7 +81,7 @@ To prepare for a formal security audit:
 **This section will be updated when formal audit results are available.**
 
 ### Planned Audit Timeline
-- **TBD**: Initial third-party audit (not yet scheduled)
+- **Not yet scheduled**: Initial third-party audit.
 
 ## Contact for Security Issues
 
