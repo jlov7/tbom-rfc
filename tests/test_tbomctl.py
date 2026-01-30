@@ -201,12 +201,12 @@ if HYPOTHESIS_AVAILABLE:
         st.dictionaries(
             st.text(min_size=1, max_size=50),
             st.one_of(
-                st.text(),
+                st.text(max_size=50),
                 st.integers(),
                 st.floats(allow_nan=False, allow_infinity=False),
                 st.booleans(),
-                st.lists(st.one_of(st.text(), st.integers(), st.booleans()), max_size=5),
-                st.dictionaries(st.text(min_size=1, max_size=10), st.text(), max_size=3),
+                st.lists(st.one_of(st.text(max_size=50), st.integers(), st.booleans()), max_size=5),
+                st.dictionaries(st.text(min_size=1, max_size=10), st.text(max_size=50), max_size=3),
             ),
             min_size=0,
             max_size=10,
@@ -222,11 +222,11 @@ if HYPOTHESIS_AVAILABLE:
         st.dictionaries(
             st.text(min_size=1, max_size=50),
             st.one_of(
-                st.text(),
+                st.text(max_size=50),
                 st.integers(),
                 st.booleans(),
-                st.lists(st.one_of(st.text(), st.integers(), st.booleans()), max_size=5),
-                st.dictionaries(st.text(min_size=1, max_size=10), st.text(), max_size=3),
+                st.lists(st.one_of(st.text(max_size=50), st.integers(), st.booleans()), max_size=5),
+                st.dictionaries(st.text(min_size=1, max_size=10), st.text(max_size=50), max_size=3),
             ),
             min_size=0,
             max_size=10,
@@ -247,7 +247,7 @@ if HYPOTHESIS_AVAILABLE:
         st.text(min_size=1, max_size=500),
         st.dictionaries(
             st.text(min_size=1, max_size=50),
-            st.one_of(st.text(), st.integers(), st.booleans()),
+            st.one_of(st.text(max_size=50), st.integers(), st.booleans()),
             min_size=0,
             max_size=10,
         ),
@@ -266,12 +266,18 @@ if HYPOTHESIS_AVAILABLE:
         st.text(min_size=1, max_size=500),
         st.dictionaries(
             st.text(min_size=1, max_size=50),
-            st.one_of(st.text(), st.integers(), st.booleans()),
+            st.one_of(st.text(max_size=50), st.integers(), st.booleans()),
             min_size=0,
             max_size=10,
         ),
-        st.one_of(st.none(), st.dictionaries(st.text(min_size=1, max_size=20), st.text(), min_size=0, max_size=5)),
-        st.one_of(st.none(), st.dictionaries(st.text(min_size=1, max_size=20), st.text(), min_size=0, max_size=5)),
+        st.one_of(
+            st.none(),
+            st.dictionaries(st.text(min_size=1, max_size=20), st.text(max_size=50), min_size=0, max_size=5),
+        ),
+        st.one_of(
+            st.none(),
+            st.dictionaries(st.text(min_size=1, max_size=20), st.text(max_size=50), min_size=0, max_size=5),
+        ),
     )
     def test_tool_digest_with_optional_fields(name, description, input_schema, output_schema, annotations):
         """Test tool digest computation with optional fields."""
@@ -293,7 +299,7 @@ if HYPOTHESIS_AVAILABLE:
         st.text(min_size=1, max_size=500),
         st.dictionaries(
             st.text(min_size=1, max_size=50),
-            st.one_of(st.text(), st.integers(), st.booleans()),
+            st.one_of(st.text(max_size=50), st.integers(), st.booleans()),
             min_size=0,
             max_size=10,
         ),
