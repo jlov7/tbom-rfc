@@ -7,7 +7,9 @@ name = "tbom"
 version = "1.0.2"
 description = "Tool Bill of Materials (TBOM) Reference Implementation"
 authors = [{name = "Jason M. Lovell", email = "jase.lovell@me.com"}]
-license = {text = "Apache-2.0"}
+license = "Apache-2.0"
+readme = "README.md"
+license-files = ["LICENSE"]
 requires-python = ">=3.9"
 dependencies = [
     "jsonschema>=4.18.0",
@@ -21,10 +23,12 @@ dev = [
     "mypy>=1.6.0",
     "pytest>=7.4.0",
     "pytest-asyncio>=0.21.0",
+    "pytest-cov>=7.0.0",
+    "coverage>=7.10.6",
     "hypothesis>=6.70.0",
     "pyinstaller>=6.0.0",
     "types-jsonschema>=4.17.0",
-    "mcp>=1.25.0",
+    "mcp>=1.25.0; python_version >= \"3.10\"",
 ]
 
 [project.scripts]
@@ -80,6 +84,15 @@ asyncio_mode = "auto"
 markers = [
     "integration: marks tests as integration tests (deselect with '-m \"not integration\"')",
 ]
+
+[tool.coverage.run]
+branch = true
+source = ["tbomctl", "tbom_mcp_server", "scripts"]
+
+[tool.coverage.report]
+fail_under = 100
+show_missing = true
+skip_covered = false
 
 [tool.hypothesis]
 max_examples = 100

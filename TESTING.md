@@ -31,6 +31,14 @@ make verify-strict
 Adds targeted mutation tests (`scripts/mutation_test.py`, output in `build/mutation-report.json`).
 The mutation score must meet the default threshold (100% killed).
 
+## Coverage (strict)
+
+```bash
+make coverage
+```
+
+Enforces 100% line + branch coverage for all non-test Python.
+
 ## Individual commands
 
 ```bash

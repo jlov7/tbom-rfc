@@ -43,7 +43,7 @@ ifneq ($(wildcard .venv/bin/python),)
 PYTHON := .venv/bin/python
 endif
 
-.PHONY: all check check-python validate-examples verify-testvector versions lock dist binaries keygen sign release verify-release clean lint test integration-test verify verify-strict ai-eval mutation-test showcase showcase-strict demo-video demo-video-strict demo-video-light demo-video-light-strict demo-gif demo-gif-strict demo-gif-light install-cli
+.PHONY: all check check-python validate-examples verify-testvector versions lock dist binaries keygen sign release verify-release clean lint test integration-test verify verify-strict coverage ai-eval mutation-test showcase showcase-strict demo-video demo-video-strict demo-video-light demo-video-light-strict demo-gif demo-gif-strict demo-gif-light install-cli
 
 all: verify
 
@@ -51,7 +51,7 @@ check: validate-examples verify-testvector lint test
 
 verify: check integration-test ai-eval
 
-verify-strict: verify mutation-test
+verify-strict: verify mutation-test coverage
 
 check-python:
 	@[ -x "$(PYTHON)" ] || { echo "python3 is required"; exit 1; }
@@ -82,6 +82,9 @@ integration-test: check-python
 ai-eval: check-python
 	@mkdir -p build
 	@$(PYTHON) scripts/ai_eval.py --output build/ai-eval.json
+
+coverage: check-python
+	@$(PYTHON) -m pytest --cov=tbomctl --cov=tbom_mcp_server --cov=scripts --cov-branch --cov-report=term-missing --cov-fail-under=100
 
 mutation-test: check-python
 	@mkdir -p build
