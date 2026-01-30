@@ -1,6 +1,5 @@
 import json
 import runpy
-from pathlib import Path
 
 import pytest
 
@@ -77,7 +76,7 @@ def test_ecdsa_der_signature_from_raw_invalid():
 def test_resolve_kid_from_key_id():
     base, frag = tbomctl.resolve_kid_from_key_id("https://x#y")
     assert base == "https://x" and frag == "y"
-    base2, frag2 = tbomctl.resolve_kid_from_key_id("https://x")
+    _base2, frag2 = tbomctl.resolve_kid_from_key_id("https://x")
     assert frag2 is None
 
 

@@ -21,4 +21,4 @@ def test_main_accepts_argv():
     ]:
         sig = inspect.signature(mod.main)
         assert len(sig.parameters) == 1
-        assert list(sig.parameters.values())[0].name == "argv"
+        assert next(iter(sig.parameters.values())).name == "argv"
