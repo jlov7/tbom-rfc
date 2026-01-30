@@ -631,7 +631,7 @@ def render_voiceover(
     return narration_path
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Render TBOM demo video from showcase log")
     parser.add_argument("--output", default="build/showcase/tbom-demo.mp4", help="Output MP4 path")
     parser.add_argument("--showcase-dir", default="build/showcase", help="Showcase output directory")
@@ -646,7 +646,7 @@ def main() -> int:
     )
     parser.add_argument("--voice", help="TTS voice (optional)")
     parser.add_argument("--voice-rate", type=int, help="TTS rate (optional)")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if subprocess.run(["ffmpeg", "-version"], capture_output=True, text=True).returncode != 0:
         raise SystemExit("ffmpeg is required to render the demo video.")

@@ -23,7 +23,7 @@ def now_utc() -> str:
     return dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Generate SLSA-style provenance JSON")
     parser.add_argument("--zip", required=True, help="Path to the release zip")
     parser.add_argument("--output", required=True, help="Output provenance JSON path")
@@ -38,7 +38,7 @@ def main() -> int:
         default="urn:tbom:build:cli",
         help="Builder ID",
     )
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     zip_path = Path(args.zip)
     output_path = Path(args.output)

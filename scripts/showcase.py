@@ -50,11 +50,11 @@ def format_cmd(cmd: list[str]) -> str:
     return " ".join(shlex.quote(part) for part in cleaned)
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Generate TBOM showcase evidence pack")
     parser.add_argument("--output-dir", default=str(REPO_ROOT / "build" / "showcase"))
     parser.add_argument("--strict", action="store_true", help="Include mutation testing output")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     out_dir = Path(args.output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)

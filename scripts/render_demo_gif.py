@@ -18,7 +18,7 @@ def run(cmd: list[str]) -> None:
         raise RuntimeError(f"Command failed: {' '.join(cmd)}\n{result.stderr}")
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Render a teaser GIF from the demo video")
     parser.add_argument("--input", default="build/showcase/tbom-demo.mp4", help="Input MP4")
     parser.add_argument("--output", default="build/showcase/tbom-demo.gif", help="Output GIF")
@@ -26,7 +26,7 @@ def main() -> int:
     parser.add_argument("--duration", type=float, default=12.0, help="Duration in seconds")
     parser.add_argument("--fps", type=int, default=12, help="Frames per second")
     parser.add_argument("--width", type=int, default=960, help="Output width in pixels")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if subprocess.run(["ffmpeg", "-version"], capture_output=True, text=True).returncode != 0:
         raise SystemExit("ffmpeg is required to render the demo GIF.")

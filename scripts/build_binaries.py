@@ -57,8 +57,9 @@ def build_binary(script_path, output_name, dist_dir):
         return False
 
 
-def main():
+def main(argv: list[str] | None = None) -> int:
     """Main build function."""
+    _ = argv
     # Ensure we're in the project root
     project_root = Path(__file__).parent.parent
     os.chdir(project_root)

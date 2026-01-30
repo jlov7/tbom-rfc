@@ -35,11 +35,11 @@ def apply_mutation(content: str, needle: str, replacement: str) -> str:
     return content.replace(needle, replacement, 1)
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run targeted mutation tests")
     parser.add_argument("--output", help="Optional path to write JSON results")
     parser.add_argument("--min-score", type=float, default=1.0, help="Minimum mutation score (0.0-1.0)")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     repo_root = Path(__file__).parent.parent
     target = repo_root / "tbomctl.py"

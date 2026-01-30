@@ -95,10 +95,10 @@ def run_evals() -> dict[str, object]:
     }
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run TBOM AI-style evals")
     parser.add_argument("--output", help="Optional path to write JSON results")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     report = run_evals()
     output = json.dumps(report, indent=2, ensure_ascii=True) + "\n"
