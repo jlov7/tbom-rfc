@@ -1,4 +1,5 @@
 {
+  "_warning": "TEST KEY ONLY - NOT FOR PRODUCTION USE. This key is published for test vector reproducibility.",
   "kty": "OKP",
   "crv": "Ed25519",
   "kid": "test-ed25519-2026-01-09",
