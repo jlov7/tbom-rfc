@@ -6,6 +6,7 @@
 [![Release Build](https://github.com/jlov7/tbom-rfc/actions/workflows/release.yml/badge.svg)](https://github.com/jlov7/tbom-rfc/actions/workflows/release.yml)
 ![Provenance](https://img.shields.io/badge/Provenance-in--toto-0b7285)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18458945.svg)](https://doi.org/10.5281/zenodo.18458945)
 
 ```
 /-----------------------------------\
