@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+title: "Tool Bill of Materials (TBOM) Specification"
+message: "If you use this specification, please cite it as below."
+type: software
+authors:
+  - family-names: Lovell
+    given-names: Jason M.
+    orcid: "https://orcid.org/0009-0001-6300-9155"
+version: 1.0.2
+date-released: "2026-02-01"
+license: Apache-2.0
+repository-code: "https://github.com/jlov7/tbom-rfc"
+keywords:
+  - MCP
+  - Model Context Protocol
+  - TBOM
+  - Tool Bill of Materials
+  - AI security
+  - supply chain
+  - provenance
+  - software bill of materials
+abstract: >-
+  Tool Bill of Materials (TBOM) is a provenance and integrity standard
+  for the Model Context Protocol (MCP) ecosystem. It provides a
+  cryptographically signed manifest that binds MCP server releases to
+  immutable tool metadata, enabling automated trust verification and
+  preventing tool poisoning in AI agent supply chains.
