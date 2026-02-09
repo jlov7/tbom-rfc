@@ -329,6 +329,40 @@ def test_build_binaries_success_windows(monkeypatch, tmp_path):
     assert build_binaries.main([]) == 0
 
 
+@pytest.mark.parametrize(
+    ("machine", "expected_tbomctl_name"),
+    [
+        ("arm64", "tbomctl-macos-arm64"),
+        ("x86_64", "tbomctl-macos-x86_64"),
+    ],
+)
+def test_build_binaries_success_macos_variants(monkeypatch, tmp_path, machine, expected_tbomctl_name):
+    fake_file = tmp_path / "scripts" / "build_binaries.py"
+    fake_file.parent.mkdir(parents=True, exist_ok=True)
+    fake_file.write_text("# stub")
+    (tmp_path / "tbomctl.py").write_text("# stub")
+    (tmp_path / "tbom_mcp_server.py").write_text("# stub")
+    monkeypatch.setattr(build_binaries, "__file__", str(fake_file))
+    monkeypatch.setattr(build_binaries.os, "chdir", lambda *_: None)
+    monkeypatch.setattr(build_binaries.platform, "system", lambda: "darwin")
+    monkeypatch.setattr(build_binaries.platform, "machine", lambda: machine)
+
+    called_output_names = []
+
+    def _fake(_script_path, output_name, dist_dir):
+        called_output_names.append(output_name)
+        Path(dist_dir).mkdir(parents=True, exist_ok=True)
+        (Path(dist_dir) / output_name).write_text("bin")
+        return True
+
+    monkeypatch.setattr(build_binaries, "build_binary", _fake)
+    assert build_binaries.main([]) == 0
+    assert called_output_names == [
+        expected_tbomctl_name,
+        f"tbom-mcp-server-darwin-{machine}",
+    ]
+
+
 def test_showcase_format_cmd(monkeypatch):
     cmd = ["/abs/path/python", "/abs/path/tbomctl.py", "check"]
     monkeypatch.setattr(showcase, "REPO_ROOT", Path("/abs/path"))
