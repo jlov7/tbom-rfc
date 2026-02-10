@@ -223,3 +223,5 @@ Verify the release:
 ```bash
 make verify-release
 ```
+
+<sub>This project is independent research. Views expressed are the author's own and do not represent those of any employer or affiliated organization.</sub>
