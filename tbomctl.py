@@ -762,7 +762,7 @@ def cmd_sign_jws(args: argparse.Namespace) -> int:
 def cmd_verify_drift(args: argparse.Namespace) -> int:
     """
     Compare a TBOM's tool definitions against a live tools/list response.
-    Detects drift (tool poisoning) by comparing digests.
+    Detects changes to covered tool metadata by comparing digests.
     """
     tbom = load_json(Path(args.tbom))
     if not isinstance(tbom, dict):

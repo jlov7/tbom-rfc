@@ -28,13 +28,13 @@
 |   T   B   B O   O M   M           |
 |   T   BBBB  OOO  M   M            |
 \-----------------------------------/
-[build] -> [sign] -> [verify] -> [trust]
+[build] -> [sign] -> [verify] -> [policy]
 </pre>
 
 ## Why it matters
 
-TBOM makes tool metadata tamper-evident. If a tool's description or schema changes
-after release, the digest check flips from OK to DRIFT.
+TBOM makes covered tool metadata tamper-evident. If a covered field changes on a
+compared tool after release, the digest check flips from OK to DRIFT.
 
 ## TBOM for humans
 
@@ -48,11 +48,11 @@ and lets you prove the live metadata still matches the label.
 <div class="tbom-grid">
   <div class="tbom-card">
     <h3>Integrity Proof</h3>
-    <p>Signed manifests bind tools to releases, proving what shipped.</p>
+    <p>Signed manifests bind declared tool metadata to release artifacts.</p>
   </div>
   <div class="tbom-card">
     <h3>Drift Detection</h3>
-    <p>Live tool lists are compared to signed digests to catch tampering.</p>
+    <p>Live tool lists are compared to signed digests to detect changes to covered fields.</p>
   </div>
   <div class="tbom-card">
     <h3>Evidence Pack</h3>
@@ -67,7 +67,7 @@ flowchart LR
   A[Release artifacts] --> B[TBOM manifest]
   B --> C[Signatures]
   C --> D[Verifier]
-  D --> E{Trusted?}
+  D --> E{Policy allows?}
   E -->|Yes| F[Use tools]
   E -->|No| G[Block + alert]
 ```

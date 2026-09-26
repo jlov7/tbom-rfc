@@ -16,21 +16,21 @@
 |   T   B   B O   O M   M           |
 |   T   BBBB  OOO  M   M            |
 \-----------------------------------/
-[build] -> [sign] -> [verify] -> [trust]
+[build] -> [sign] -> [verify] -> [policy]
 ```
 
-**Tool Bill of Materials (TBOM)** is a provenance and integrity standard for the Model Context Protocol (MCP) ecosystem. It provides a cryptographically signed manifest that binds MCP server releases to immutable tool metadata, enabling automated trust verification and preventing tool poisoning in AI agent supply chains.
+**Tool Bill of Materials (TBOM)** is a provenance and integrity standard for the Model Context Protocol (MCP) ecosystem. It provides a cryptographically signed manifest that binds an MCP server release to defined tool metadata, enabling signature verification and detection of changes to the covered fields.
 
 ## TBOM in 30 seconds (non-technical)
 
 TBOM is a signed label for MCP tools. It answers three questions:
-What shipped? What is running? Did anything change?
+What shipped? What is running? Did covered metadata change?
 
-Simple rule: same label + same metadata => OK. Anything else => DRIFT.
+For a compared tool: same covered metadata => OK. Changed covered metadata => DRIFT.
 
 STAMP model:
-- **Signed**: provenance is cryptographically verifiable.
-- **Tamper-evident**: any text/schema change flips to DRIFT.
+- **Signed**: the manifest signature is cryptographically verifiable.
+- **Tamper-evident**: changes to covered metadata on compared tools flip to DRIFT.
 - **Auditable**: you can re-check the exact release months later.
 - **Machine-checkable**: policy engines can enforce checks without human review.
 - **Provenance**: the label anchors tool metadata to a specific release.
@@ -117,7 +117,7 @@ flowchart LR
     A[Release artifacts] --> B[TBOM manifest]
     B --> C[Signatures]
     C --> D[Verifier]
-    D --> E{Trusted?}
+    D --> E{Policy allows?}
     E -->|Yes| F[Use tools]
     E -->|No| G[Block and alert]
 ```

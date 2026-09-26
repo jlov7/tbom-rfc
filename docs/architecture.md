@@ -44,18 +44,18 @@ sequenceDiagram
 
 | Threat | Signal | Mitigation |
 | --- | --- | --- |
-| Tool description tampering | Drifted digests | verify-drift blocks use |
-| Registry key compromise | Signature mismatch | validate keys + signatures |
+| Tool description tampering | Drifted digests | policy may block or alert on DRIFT |
+| Compromised or untrusted signing key | Key trust or revocation signal | policy denies or escalates |
 | Stale tool list | Missing in live/TBOM | policy denies or escalates |
 | Downgrade or replay | Older TBOM version | policy enforces min version |
 
 ```mermaid
 flowchart TB
-  T[Threats] --> P[Tool poisoning]
-  T --> K[Key compromise]
+  T[Threats] --> P[Covered metadata tampering]
+  T --> K[Untrusted signing key]
   T --> R[Replay or downgrade]
   P --> D[Digest mismatch]
-  K --> S[Signature check fails]
+  K --> S[Key trust check fails]
   R --> V[Version policy fails]
   D --> X[Block + alert]
   S --> X
