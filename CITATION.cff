@@ -22,6 +22,6 @@ keywords:
 abstract: >-
   Tool Bill of Materials (TBOM) is a provenance and integrity standard
   for the Model Context Protocol (MCP) ecosystem. It provides a
-  cryptographically signed manifest that binds MCP server releases to
-  immutable tool metadata, enabling automated trust verification and
-  preventing tool poisoning in AI agent supply chains.
+  cryptographically signed manifest that binds an MCP server release to
+  defined tool metadata, enabling signature verification and detection of
+  changes to the covered fields.

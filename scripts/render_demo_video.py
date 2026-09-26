@@ -696,10 +696,10 @@ def main(argv: list[str] | None = None) -> int:
             subtitle="A 60-second walkthrough",
             body_lines=wrap_lines(
                 [
-                    "Trustable tool metadata for MCP.",
-                    "Proves what shipped. Detects drift in seconds.",
+                    "Verifiable tool metadata for MCP.",
+                    "Records signed release metadata and detects covered drift.",
                     "",
-                    "build -> sign -> verify -> trust",
+                    "build -> sign -> verify -> policy",
                 ],
                 width=56,
             ),
@@ -730,12 +730,12 @@ def main(argv: list[str] | None = None) -> int:
         Slide(
             name="solution",
             title="How it works",
-            subtitle="build -> sign -> verify -> trust",
+            subtitle="build -> sign -> verify -> policy",
             body_lines=wrap_lines(
                 [
                     "TBOM signs tool definitions and digests.",
                     "Verifier compares live tools to signed metadata.",
-                    "Mismatch => DRIFT and policy block.",
+                    "Mismatch => DRIFT; policy may block.",
                 ],
                 width=60,
             ),
@@ -887,7 +887,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     narration = [
-        "TBOM makes tool metadata tamper-evident. It proves what shipped and detects drift in seconds.",
+        "TBOM makes covered tool metadata tamper-evident and detects changes to signed fields.",
         "Metadata is a control plane. Small text edits can silently change behavior.",
         "TBOM signs tool definitions and digests. Verifiers compare live tools to signed metadata.",
         "First, validate the TBOM against the schema and internal digests.",
